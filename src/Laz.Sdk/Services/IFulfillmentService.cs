@@ -41,4 +41,14 @@ public interface IFulfillmentService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Ready-To-Ship v2 — mark one or more packed packages as ready-to-ship.
+    /// Calls <c>/order/package/rts</c>. Coexists with <see cref="IOrdersService.ReadyToShipAsync"/>.
+    /// </summary>
+    Task<ReadyToShipV2Response> ReadyToShipV2Async(
+        ReadyToShipV2Request request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }
