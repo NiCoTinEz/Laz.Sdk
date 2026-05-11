@@ -24,10 +24,14 @@ internal sealed class LazClient : ILazClient
         this.scopedCredentials = scopedCredentials;
         Auth = new AuthService(this);
         Orders = new OrdersService(this);
+        Fulfillment = new FulfillmentService(this);
+        Logistics = new LogisticsService(this);
     }
 
     public IAuthService Auth { get; }
     public IOrdersService Orders { get; }
+    public IFulfillmentService Fulfillment { get; }
+    public ILogisticsService Logistics { get; }
 
     public ILazClient WithCredentials(LazCredentials credentials)
     {

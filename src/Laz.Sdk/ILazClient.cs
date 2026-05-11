@@ -15,6 +15,12 @@ public interface ILazClient
     /// <summary>Order-related endpoints (<c>/order/*</c>, <c>/orders/*</c>).</summary>
     IOrdersService Orders { get; }
 
+    /// <summary>Fulfillment endpoints (Pack v2, RTS v2, PrintAWB, repack, DBS/SOF delivery).</summary>
+    IFulfillmentService Fulfillment { get; }
+
+    /// <summary>Logistics endpoints (tracking, 3PL station / runsheet management, scan, LDP).</summary>
+    ILogisticsService Logistics { get; }
+
     /// <summary>
     /// Execute a signed request against the Lazada Open Platform gateway configured
     /// via <see cref="LazClientOptions.ServerUrl"/>. Prefer the typed wrappers under
