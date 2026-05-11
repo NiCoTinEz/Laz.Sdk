@@ -55,4 +55,13 @@ public interface IOrdersService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get the line items of a single order. Calls <c>/order/items/get</c>.
+    /// </summary>
+    Task<GetOrderItemsResponse> GetOrderItemsAsync(
+        GetOrderItemsRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }
