@@ -146,6 +146,122 @@ internal sealed class FulfillmentService(LazClient client) : IFulfillmentService
         return response.DeserializeOrThrow<RecreatePackageResponse>();
     }
 
+    public Task<DbsPackageDeliveryResponse> ConfirmDbsDeliveryAsync(
+        ConfirmDbsDeliveryRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+        => PostPackagesAsync<DbsPackageDeliveryResponse>("/order/package/sof/delivered", "dbsDeliveryReq", request?.Packages, accessToken, credentials, cancellationToken);
+
+    public Task<DbsPackageDeliveryResponse> FailedDbsDeliveryAsync(
+        FailedDbsDeliveryRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+        => PostPackagesAsync<DbsPackageDeliveryResponse>("/order/package/sof/failed_delivery", "dbsFailedDeliveryReq", request?.Packages, accessToken, credentials, cancellationToken);
+
+    public async Task<PackageStatusUpdateForDbsResponse> PackageStatusUpdateForDbsAsync(
+        PackageStatusUpdateForDbsRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        ArgumentException.ThrowIfNullOrEmpty(request.TrackingNumber);
+        ArgumentException.ThrowIfNullOrEmpty(request.Source);
+        ArgumentException.ThrowIfNullOrEmpty(request.PackageId);
+        ArgumentNullException.ThrowIfNull(request.TrackInfo);
+
+        var trackInfoJson = JsonSerializer.Serialize(new
+        {
+            latestStatus = new
+            {
+                subStatusDesc = request.TrackInfo.LatestStatus.SubStatusDesc,
+                subStatus     = request.TrackInfo.LatestStatus.SubStatus,
+                status        = request.TrackInfo.LatestStatus.Status,
+            },
+            latestEvent = new
+            {
+                stage       = request.TrackInfo.LatestEvent.Stage,
+                eventTime   = request.TrackInfo.LatestEvent.EventTime.ToString(System.Globalization.CultureInfo.InvariantCulture),
+                description = request.TrackInfo.LatestEvent.Description,
+                location    = request.TrackInfo.LatestEvent.Location,
+            },
+        });
+
+        var lazRequest = new LazRequest("/order/package/sof/status/update");
+        lazRequest.AddApiParameter("trackingNumber", request.TrackingNumber);
+        lazRequest.AddApiParameter("source",         request.Source);
+        if (!string.IsNullOrEmpty(request.CarrierCode))
+        {
+            lazRequest.AddApiParameter("carrierCode", request.CarrierCode);
+        }
+        lazRequest.AddApiParameter("tag",       request.PackageId);
+        lazRequest.AddApiParameter("trackInfo", trackInfoJson);
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<PackageStatusUpdateForDbsResponse>();
+    }
+
+    public async Task<DeliverDigitalResponse> DeliverDigitalAsync(
+        DeliverDigitalRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        if (request.Orders is null || request.Orders.Count == 0)
+        {
+            throw new ArgumentException("At least one order is required.", nameof(request));
+        }
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            orders = request.Orders.Select(o => new
+            {
+                order_item_list = o.OrderItemList
+                    .Select(group => "[" + string.Join(',', group) + "]")
+                    .ToArray(),
+                order_id = o.OrderId,
+            }).ToArray(),
+        });
+
+        var lazRequest = new LazRequest("/order/digital/delivered");
+        lazRequest.AddApiParameter("digitalDeliveryReq", payload);
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<DeliverDigitalResponse>();
+    }
+
+    private async Task<TResponse> PostPackagesAsync<TResponse>(
+        string apiPath,
+        string paramName,
+        IReadOnlyList<AwbPackage>? packages,
+        string accessToken,
+        LazCredentials? credentials,
+        CancellationToken cancellationToken)
+        where TResponse : class
+    {
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        if (packages is null || packages.Count == 0)
+        {
+            throw new ArgumentException("At least one package is required.", nameof(packages));
+        }
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            packages = packages.Select(p => new { package_id = p.PackageId }).ToArray(),
+        });
+
+        var lazRequest = new LazRequest(apiPath);
+        lazRequest.AddApiParameter(paramName, payload);
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<TResponse>();
+    }
+
     private static string SerializeShipmentProvidersReq(GetShipmentProvidersRequest request)
     {
         var ordersJson = request.Orders.Select(o => new

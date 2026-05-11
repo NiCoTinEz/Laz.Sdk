@@ -61,4 +61,32 @@ public interface IFulfillmentService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>Confirm delivery for a DBS (Drop-by-Seller) package. Calls <c>/order/package/sof/delivered</c>.</summary>
+    Task<DbsPackageDeliveryResponse> ConfirmDbsDeliveryAsync(
+        ConfirmDbsDeliveryRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Report failed delivery for a DBS package. Calls <c>/order/package/sof/failed_delivery</c>.</summary>
+    Task<DbsPackageDeliveryResponse> FailedDbsDeliveryAsync(
+        FailedDbsDeliveryRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Push a DBS tracking event back to Lazada. Calls <c>/order/package/sof/status/update</c>.</summary>
+    Task<PackageStatusUpdateForDbsResponse> PackageStatusUpdateForDbsAsync(
+        PackageStatusUpdateForDbsRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
+
+    /// <summary>Mark a digital order item as delivered. Calls <c>/order/digital/delivered</c>.</summary>
+    Task<DeliverDigitalResponse> DeliverDigitalAsync(
+        DeliverDigitalRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }
