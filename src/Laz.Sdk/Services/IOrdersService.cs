@@ -91,4 +91,13 @@ public interface IOrdersService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Cancel a single order item in pending status. Calls <c>/order/cancel</c>.
+    /// </summary>
+    Task<CancelOrderResponse> CancelAsync(
+        CancelOrderRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }

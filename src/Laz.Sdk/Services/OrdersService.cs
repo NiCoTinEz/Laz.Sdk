@@ -60,6 +60,27 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
         return response.DeserializeOrThrow<GetOrdersResponse>();
     }
 
+    public async Task<CancelOrderResponse> CancelAsync(
+        CancelOrderRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+
+        var lazRequest = new LazRequest("/order/cancel");
+        lazRequest.AddApiParameter("order_item_id", request.OrderItemId.ToString(CultureInfo.InvariantCulture));
+        lazRequest.AddApiParameter("reason_id",     request.ReasonId.ToString(CultureInfo.InvariantCulture));
+        if (!string.IsNullOrEmpty(request.ReasonDetail))
+        {
+            lazRequest.AddApiParameter("reason_detail", request.ReasonDetail);
+        }
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<CancelOrderResponse>();
+    }
+
     public async Task<ReadyToShipResponse> ReadyToShipAsync(
         ReadyToShipRequest request,
         string accessToken,
