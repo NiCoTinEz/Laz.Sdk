@@ -103,10 +103,18 @@ public sealed record LazAddress
     [JsonPropertyName("address3")]         public string? Address3 { get; init; }
     [JsonPropertyName("address4")]         public string? Address4 { get; init; }
     [JsonPropertyName("address5")]         public string? Address5 { get; init; }
-    [JsonPropertyName("addressDsitrict")]  public string? AddressDistrict { get; init; }
     [JsonPropertyName("city")]             public string? City { get; init; }
     [JsonPropertyName("post_code")]        public string? PostCode { get; init; }
     [JsonPropertyName("country")]          public string? Country { get; init; }
+
+    // Lazada wires this field with two different spellings depending on the endpoint
+    // ('/orders/get' uses the typo; '/order/get' uses the corrected one). Capture both.
+    [JsonPropertyName("addressDsitrict")]  public string? AddressDistrictTypo { get; init; }
+    [JsonPropertyName("addressDistrict")]  public string? AddressDistrictFixed { get; init; }
+
+    /// <summary>Convenience accessor — prefers the correctly spelled field, falls back to the typo.</summary>
+    [JsonIgnore]
+    public string? AddressDistrict => AddressDistrictFixed ?? AddressDistrictTypo;
 }
 
 /// <summary>Country-specific recipient identifiers (Indonesia, Vietnam, etc.).</summary>

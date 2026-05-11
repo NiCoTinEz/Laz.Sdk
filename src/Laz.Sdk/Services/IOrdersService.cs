@@ -40,4 +40,19 @@ public interface IOrdersService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get a single order by id. Calls <c>/order/get</c>.
+    /// </summary>
+    /// <param name="request">Order id.</param>
+    /// <param name="accessToken">Seller access token.</param>
+    /// <param name="credentials">Optional per-call credential override.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Single order envelope.</returns>
+    /// <exception cref="LazException">Thrown when the platform returns an error response.</exception>
+    Task<GetOrderResponse> GetOrderAsync(
+        GetOrderRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }

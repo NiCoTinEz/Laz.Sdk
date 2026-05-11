@@ -60,6 +60,22 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
         return response.DeserializeOrThrow<GetOrdersResponse>();
     }
 
+    public async Task<GetOrderResponse> GetOrderAsync(
+        GetOrderRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+
+        var lazRequest = new LazRequest("/order/get") { HttpMethod = Constants.METHOD_GET };
+        lazRequest.AddApiParameter("order_id", request.OrderId.ToString(CultureInfo.InvariantCulture));
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<GetOrderResponse>();
+    }
+
     private static string FormatIso(DateTimeOffset value)
         => value.ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture);
 
