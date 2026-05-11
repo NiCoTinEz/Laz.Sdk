@@ -47,3 +47,6 @@ appsettings.*.json
 
 # Claude Code local state
 .claude/
+
+# Legacy .NET Framework 2.0 SDK kept on disk for reference, slated for removal.
+net/
