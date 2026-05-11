@@ -35,25 +35,33 @@ internal sealed class LazClient : ILazClient
         return new LazClient(http, options, credentials);
     }
 
-    private string EffectiveAppKey    => scopedCredentials?.AppKey    ?? options.AppKey;
-    private string EffectiveAppSecret => scopedCredentials?.AppSecret ?? options.AppSecret;
-    private string EffectiveServerUrl => scopedCredentials?.ServerUrl ?? options.ServerUrl;
+    private string ResolveAppKey(LazCredentials? perCall)
+        => perCall?.AppKey ?? scopedCredentials?.AppKey ?? options.AppKey;
+
+    private string ResolveAppSecret(LazCredentials? perCall)
+        => perCall?.AppSecret ?? scopedCredentials?.AppSecret ?? options.AppSecret;
+
+    private string ResolveServerUrl(LazCredentials? perCall)
+        => perCall?.ServerUrl ?? scopedCredentials?.ServerUrl ?? options.ServerUrl;
 
     public Task<LazResponse> ExecuteAsync(
         LazRequest request,
         string? accessToken = null,
         DateTime? timestamp = null,
+        LazCredentials? credentials = null,
         CancellationToken cancellationToken = default)
-        => ExecuteCoreAsync(request, EffectiveServerUrl, accessToken, timestamp, cancellationToken);
+        => ExecuteCoreAsync(request, ResolveServerUrl(credentials), accessToken, timestamp, credentials, cancellationToken);
 
     /// <summary>
     /// Internal execute that lets services target a non-default gateway (e.g. auth gateway).
+    /// <paramref name="perCallCredentials"/> takes precedence over scoped (WithCredentials) and options.
     /// </summary>
     internal async Task<LazResponse> ExecuteCoreAsync(
         LazRequest request,
         string serverUrl,
         string? accessToken,
         DateTime? timestamp,
+        LazCredentials? perCallCredentials,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -62,8 +70,8 @@ internal sealed class LazClient : ILazClient
             throw new ArgumentException($"{nameof(LazRequest)}.{nameof(LazRequest.ApiName)} is required.", nameof(request));
         }
 
-        var effectiveAppKey    = EffectiveAppKey;
-        var effectiveAppSecret = EffectiveAppSecret;
+        var effectiveAppKey    = ResolveAppKey(perCallCredentials);
+        var effectiveAppSecret = ResolveAppSecret(perCallCredentials);
         if (string.IsNullOrEmpty(effectiveAppKey) || string.IsNullOrEmpty(effectiveAppSecret))
         {
             throw new InvalidOperationException(

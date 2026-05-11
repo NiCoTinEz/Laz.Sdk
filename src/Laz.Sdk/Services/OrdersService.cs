@@ -12,6 +12,7 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
     public async Task<GetOrderDocumentResponse> GetDocumentAsync(
         GetOrderDocumentRequest request,
         string accessToken,
+        LazCredentials? credentials = null,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
@@ -25,7 +26,7 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
         lazRequest.AddApiParameter("doc_type", MapDocType(request.DocType));
         lazRequest.AddApiParameter("order_item_ids", FormatIds(request.OrderItemIds));
 
-        var response = await _client.ExecuteAsync(lazRequest, accessToken, cancellationToken: cancellationToken).ConfigureAwait(false);
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
         return response.DeserializeOrThrow<GetOrderDocumentResponse>();
     }
 

@@ -9,7 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `client.WithCredentials(LazCredentials)` — returns a scoped `ILazClient` that overrides `AppKey` / `AppSecret` (and optionally `ServerUrl`) per call without touching DI. Shares the underlying `HttpClient`. Designed for SaaS / multi-tenant scenarios where tenant credentials are loaded at request time.
+- Inline `credentials: LazCredentials?` parameter on `ILazClient.ExecuteAsync`, `IAuthService.CreateAccessTokenAsync` / `RefreshAccessTokenAsync`, and `IOrdersService.GetDocumentAsync`. Lets callers supply tenant credentials directly per call without `WithCredentials`. Precedence: **inline > scoped > options**.
+- `client.WithCredentials(LazCredentials)` — alternative scoped form. Returns a new `ILazClient` bound to the credentials so multiple calls reuse them. Shares the underlying `HttpClient`.
 - `LazCredentials` record.
 
 ### Changed

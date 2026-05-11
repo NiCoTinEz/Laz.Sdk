@@ -104,24 +104,37 @@ File.WriteAllBytes("label.html", bytes);
 
 `OrderDocumentType` values map to the wire format: `Invoice` → `"invoice"`, `ShippingLabel` → `"shippingLabel"`, `CarrierManifest` → `"carrierManifest"`. Errors surface as `LazException(ErrorCode, ErrorMsg)`.
 
-## Per-call credential override — `client.WithCredentials(...)`
+## Per-call credentials
 
-For multi-tenant apps that don't know `AppKey` / `AppSecret` at DI startup, register only the regional `ServerUrl` and supply creds per request:
+Two equivalent patterns. Pick whichever fits your call site.
+
+**Inline parameter (simplest — pass on each call):**
 
 ```csharp
 // Startup — no AppKey / AppSecret yet
 services.AddLazClient(o => o.ServerUrl = UrlConstants.API_GATEWAY_URL_TH);
+
+// Per request
+var creds = new LazCredentials(tenant.AppKey, tenant.AppSecret);
+
+await client.Orders.GetDocumentAsync(req, tenant.AccessToken, credentials: creds, ct);
+await client.ExecuteAsync(lazReq, tenant.AccessToken, credentials: creds, ct);
+await client.Auth.RefreshAccessTokenAsync(tenant.RefreshToken, credentials: creds, ct);
 ```
+
+**Scoped client (reuse creds across many calls):**
 
 ```csharp
-// Request handler — creds loaded from your tenant DB / settings store
 var scoped = client.WithCredentials(new LazCredentials(tenant.AppKey, tenant.AppSecret));
 await scoped.Orders.GetDocumentAsync(req, tenant.AccessToken, ct);
+await scoped.ExecuteAsync(lazReq, tenant.AccessToken, ct);
 ```
 
-`AppKey` / `AppSecret` are optional on `LazClientOptions`; if both are left empty AND no `WithCredentials` override is supplied at call time, the client throws `InvalidOperationException` with a clear message.
+Resolution precedence on every call: **inline `credentials` param → `WithCredentials` scope → `LazClientOptions`.** If none supply both `AppKey` and `AppSecret`, the client throws `InvalidOperationException` with an actionable message.
 
-You can also override the regional gateway per request:
+`AppKey` / `AppSecret` on `LazClientOptions` are optional — you can register with only `ServerUrl`.
+
+You can also override the regional gateway per request via `LazCredentials.ServerUrl`:
 
 ```csharp
 var creds = new LazCredentials(

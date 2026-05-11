@@ -7,7 +7,10 @@ internal sealed class AuthService(LazClient client) : IAuthService
 {
     private readonly LazClient _client = client;
 
-    public async Task<LazAccessToken> CreateAccessTokenAsync(string code, CancellationToken cancellationToken = default)
+    public async Task<LazAccessToken> CreateAccessTokenAsync(
+        string code,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(code);
 
@@ -19,12 +22,16 @@ internal sealed class AuthService(LazClient client) : IAuthService
             UrlConstants.API_AUTHORIZATION_URL,
             accessToken: null,
             timestamp: null,
+            perCallCredentials: credentials,
             cancellationToken).ConfigureAwait(false);
 
         return ParseAuthResponse(response);
     }
 
-    public async Task<LazAccessToken> RefreshAccessTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    public async Task<LazAccessToken> RefreshAccessTokenAsync(
+        string refreshToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
     {
         ArgumentException.ThrowIfNullOrEmpty(refreshToken);
 
@@ -36,6 +43,7 @@ internal sealed class AuthService(LazClient client) : IAuthService
             UrlConstants.API_AUTHORIZATION_URL,
             accessToken: null,
             timestamp: null,
+            perCallCredentials: credentials,
             cancellationToken).ConfigureAwait(false);
 
         return ParseAuthResponse(response);

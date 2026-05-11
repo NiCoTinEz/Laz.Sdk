@@ -24,10 +24,16 @@ public interface ILazClient
     /// <param name="accessToken">Optional access token (omit for endpoints that do not require one).</param>
     /// <param name="timestamp">Optional request timestamp. Defaults to <see cref="DateTimeOffset.UtcNow"/>; caller values are coerced to UTC.</param>
     /// <param name="cancellationToken">Cancellation token.</param>
+    /// <param name="credentials">
+    /// Optional per-call credential override. Takes precedence over both <see cref="WithCredentials"/>
+    /// and <see cref="LazClientOptions.AppKey"/> / <see cref="LazClientOptions.AppSecret"/>.
+    /// Use when you want creds inline on each call instead of via a scoped client.
+    /// </param>
     Task<LazResponse> ExecuteAsync(
         LazRequest request,
         string? accessToken = null,
         DateTime? timestamp = null,
+        LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
