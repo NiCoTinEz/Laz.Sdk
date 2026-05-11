@@ -121,6 +121,31 @@ internal sealed class FulfillmentService(LazClient client) : IFulfillmentService
         return response.DeserializeOrThrow<ReadyToShipV2Response>();
     }
 
+    public async Task<RecreatePackageResponse> RecreatePackageAsync(
+        RecreatePackageRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        if (request.Packages is null || request.Packages.Count == 0)
+        {
+            throw new ArgumentException("At least one package is required.", nameof(request));
+        }
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            packages = request.Packages.Select(p => new { package_id = p.PackageId }).ToArray(),
+        });
+
+        var lazRequest = new LazRequest("/order/package/repack");
+        lazRequest.AddApiParameter("rePackReq", payload);
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<RecreatePackageResponse>();
+    }
+
     private static string SerializeShipmentProvidersReq(GetShipmentProvidersRequest request)
     {
         var ordersJson = request.Orders.Select(o => new

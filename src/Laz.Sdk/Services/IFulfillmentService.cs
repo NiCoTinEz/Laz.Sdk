@@ -51,4 +51,14 @@ public interface IFulfillmentService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Recreate / split a package after pack but before ready-to-ship.
+    /// Calls <c>/order/package/repack</c>.
+    /// </summary>
+    Task<RecreatePackageResponse> RecreatePackageAsync(
+        RecreatePackageRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }
