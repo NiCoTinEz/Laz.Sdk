@@ -16,7 +16,8 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="10.0.7" />
     <PackageReference Include="Microsoft.Extensions.Options.DataAnnotations" Version="10.0.7" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" />
+    <!-- SourceLink only on CI (or when a remote is wired) to keep local pack quiet pre-publish. -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="all" Condition="'$(ContinuousIntegrationBuild)' == 'true'" />
   </ItemGroup>
 
   <ItemGroup>
