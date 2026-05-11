@@ -82,6 +82,17 @@ Both methods call the Lazada auth gateway (`https://auth.lazada.com/rest`) regar
 
 Access via `client.Orders`. Endpoints are added incrementally; current coverage:
 
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Orders.GetOrdersAsync(...)`             | `/orders/get`         | List orders with filters + paging + sort |
+| `client.Orders.GetOrderAsync(...)`              | `/order/get`          | Get one order by id |
+| `client.Orders.GetOrderItemsAsync(...)`         | `/order/items/get`    | Line items of one order |
+| `client.Orders.GetMultipleOrderItemsAsync(...)` | `/orders/items/get`   | Line items for ≤50 orders |
+| `client.Orders.GetDocumentAsync(...)`           | `/order/document/get` | Invoice / shipping label / carrier manifest (Base64) |
+| `client.Orders.PackAsync(...)`                  | `/order/pack`         | Mark items packed |
+| `client.Orders.ReadyToShipAsync(...)`           | `/order/rts`          | Mark items ready-to-ship + assign tracking |
+| `client.Orders.CancelAsync(...)`                | `/order/cancel`       | Cancel one pending item |
+
 ### `client.Orders.GetDocumentAsync(...)` — `/order/document/get`
 
 Retrieve invoice / shipping label / carrier manifest for one or more order items:

@@ -21,7 +21,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `LazAccessToken` + `LazCountryUserInfo` record types under `Laz.Sdk.Models`.
 - `LazResponse.ReadAs<T>(JsonSerializerOptions?)` helper for deserializing the raw body of any `ExecuteAsync` call.
 - Service-grouped surface: every API domain lives under a property on `ILazClient`. Currently exposes `Auth` (`IAuthService`) and `Orders` (`IOrdersService`).
-- `client.Orders.GetDocumentAsync(request, accessToken, ct)` — `/order/document/get`. Returns invoice / shipping label / carrier manifest (Base64 file payload + mime type). Wraps `OrderDocumentType` enum to the wire-format string. Helper `OrderDocument.GetFileBytes()` decodes Base64 to bytes.
+- `client.Orders.GetOrdersAsync(...)` — `/orders/get` (filtered/sorted/paged listing; full `LazOrder` schema with addresses + recipient info).
+- `client.Orders.GetOrderAsync(...)` — `/order/get`.
+- `client.Orders.GetOrderItemsAsync(...)` — `/order/items/get` (full ~60-field `LazOrderItem` + nested `LazPickUpStoreInfo`).
+- `client.Orders.GetMultipleOrderItemsAsync(...)` — `/orders/items/get` (up to 50 orders per call, grouped response).
+- `client.Orders.GetDocumentAsync(request, accessToken, ct)` — `/order/document/get`.
+- `client.Orders.PackAsync(...)` — `/order/pack` (mark items packed under a shipping provider).
+- `client.Orders.ReadyToShipAsync(...)` — `/order/rts` (assign tracking + mark RTS).
+- `client.Orders.CancelAsync(...)` — `/order/cancel` (single-item cancel with reason).
+- `Laz.Sdk.Json.StringOrBoolJsonConverter` (internal) — handles Lazada's inconsistent boolean wire forms: `true`/`false` (native), `"true"`/`"false"` (any case), `"1"`/`"0"`, and JSON numbers.
+- `LazAddress.AddressDistrict` computed property — gracefully reads either the `addressDsitrict` (typo, used by `/orders/get`) or `addressDistrict` (correct, used by `/order/get`) wire keys. Returns invoice / shipping label / carrier manifest (Base64 file payload + mime type). Wraps `OrderDocumentType` enum to the wire-format string. Helper `OrderDocument.GetFileBytes()` decodes Base64 to bytes.
 
 ### Fixed
 
