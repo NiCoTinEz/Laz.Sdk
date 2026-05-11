@@ -30,4 +30,15 @@ public interface IFulfillmentService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Pack v2 — newer fulfillment-grouped pack endpoint that supports batch + multi-order.
+    /// Calls <c>/order/fulfill/pack</c>. Coexists with the legacy
+    /// <see cref="IOrdersService.PackAsync"/> on <c>/order/pack</c>.
+    /// </summary>
+    Task<PackV2Response> PackV2Async(
+        PackV2Request request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }

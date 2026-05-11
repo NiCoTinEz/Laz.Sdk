@@ -60,6 +60,42 @@ internal sealed class FulfillmentService(LazClient client) : IFulfillmentService
         return response.DeserializeOrThrow<PrintAwbResponse>();
     }
 
+    public async Task<PackV2Response> PackV2Async(
+        PackV2Request request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        ArgumentException.ThrowIfNullOrEmpty(request.DeliveryType);
+        ArgumentException.ThrowIfNullOrEmpty(request.ShipmentProviderCode);
+        if (request.PackOrderList is null || request.PackOrderList.Count == 0)
+        {
+            throw new ArgumentException("PackOrderList must contain at least one order.", nameof(request));
+        }
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            pack_order_list = request.PackOrderList.Select(o => new
+            {
+                order_item_list = o.OrderItemList
+                    .Select(group => "[" + string.Join(',', group) + "]")
+                    .ToArray(),
+                order_id = o.OrderId,
+            }).ToArray(),
+            delivery_type           = request.DeliveryType,
+            shipment_provider_code  = request.ShipmentProviderCode,
+            shipping_allocate_type  = request.ShippingAllocateType,
+        });
+
+        var lazRequest = new LazRequest("/order/fulfill/pack");
+        lazRequest.AddApiParameter("packReq", payload);
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<PackV2Response>();
+    }
+
     private static string SerializeShipmentProvidersReq(GetShipmentProvidersRequest request)
     {
         var ordersJson = request.Orders.Select(o => new
