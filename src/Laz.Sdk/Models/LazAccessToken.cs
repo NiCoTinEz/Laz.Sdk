@@ -13,11 +13,15 @@ public sealed record LazAccessToken
     [JsonPropertyName("access_token")]       public string? AccessToken { get; init; }
     [JsonPropertyName("refresh_token")]      public string? RefreshToken { get; init; }
 
-    /// <summary>Access token lifetime in seconds.</summary>
-    [JsonPropertyName("expires_in")]         public long ExpiresIn { get; init; }
+    /// <summary>Access token lifetime in seconds. Lazada wires this as a JSON string.</summary>
+    [JsonPropertyName("expires_in")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+    public long ExpiresIn { get; init; }
 
-    /// <summary>Refresh token lifetime in seconds.</summary>
-    [JsonPropertyName("refresh_expires_in")] public long RefreshExpiresIn { get; init; }
+    /// <summary>Refresh token lifetime in seconds. Lazada wires this as a JSON string.</summary>
+    [JsonPropertyName("refresh_expires_in")]
+    [JsonNumberHandling(JsonNumberHandling.AllowReadingFromString)]
+    public long RefreshExpiresIn { get; init; }
 
     [JsonPropertyName("country")]            public string? Country { get; init; }
     [JsonPropertyName("account_platform")]   public string? AccountPlatform { get; init; }

@@ -2,13 +2,26 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Laz.Sdk.Models;
+using Laz.Sdk.Services;
 using Laz.Sdk.Util;
 
 namespace Laz.Sdk;
 
-internal sealed class LazClient(HttpClient http, LazClientOptions options) : ILazClient
+internal sealed class LazClient : ILazClient
 {
     private const string PartnerId = "laz-sdk-net-20260511";
+
+    private readonly HttpClient http;
+    private readonly LazClientOptions options;
+
+    public LazClient(HttpClient http, LazClientOptions options)
+    {
+        this.http = http;
+        this.options = options;
+        Orders = new OrdersService(this);
+    }
+
+    public IOrdersService Orders { get; }
 
     public Task<LazResponse> ExecuteAsync(
         LazRequest request,

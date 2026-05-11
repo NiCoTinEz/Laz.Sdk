@@ -1,4 +1,5 @@
 using Laz.Sdk.Models;
+using Laz.Sdk.Services;
 
 namespace Laz.Sdk;
 
@@ -7,6 +8,9 @@ namespace Laz.Sdk;
 /// </summary>
 public interface ILazClient
 {
+    /// <summary>Typed wrappers for the <c>/orders/*</c> endpoint family.</summary>
+    IOrdersService Orders { get; }
+
     /// <summary>
     /// Execute a signed request against the Lazada Open Platform gateway configured
     /// via <see cref="LazClientOptions.ServerUrl"/>.

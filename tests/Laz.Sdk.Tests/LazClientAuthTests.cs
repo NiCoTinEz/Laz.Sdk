@@ -114,6 +114,57 @@ public class LazClientAuthTests
     }
 
     [Fact]
+    public async Task CreateAccessTokenAsync_ParsesOfficialDocSample_WithStringExpiresIn()
+    {
+        // Verbatim sample from https://open.lazada.com/apps/doc/api?path=/auth/token/create
+        // Note: expires_in and refresh_expires_in arrive as JSON strings, not numbers.
+        const string OfficialSample = """
+        {
+          "access_token": "50000601c30atpedfgu3LVvik87Ixlsvle3mSoB7701ceb156fPunYZ43GBg",
+          "country": "sg",
+          "refresh_token": "500016000300bwa2WteaQyfwBMnPxurcA0mXGhQdTt18356663CfcDTYpWoi",
+          "account_id": "7063844",
+          "code": "0",
+          "account_platform": "seller_center",
+          "refresh_expires_in": "60",
+          "country_user_info": [
+            {
+              "country": "SG",
+              "user_id": "1001",
+              "seller_id": "1001",
+              "short_code": "SG1001"
+            }
+          ],
+          "expires_in": "10",
+          "request_id": "0ba2887315178178017221014",
+          "account": "xxx@126.com"
+        }
+        """;
+
+        var client = NewClient(new TestHandler(OfficialSample));
+
+        var token = await client.CreateAccessTokenAsync("0_100132_2DL4DV3jcU1UOT7WGI1A4rY91");
+
+        Assert.Equal("50000601c30atpedfgu3LVvik87Ixlsvle3mSoB7701ceb156fPunYZ43GBg", token.AccessToken);
+        Assert.Equal("500016000300bwa2WteaQyfwBMnPxurcA0mXGhQdTt18356663CfcDTYpWoi", token.RefreshToken);
+        Assert.Equal(10L, token.ExpiresIn);
+        Assert.Equal(60L, token.RefreshExpiresIn);
+        Assert.Equal("sg",            token.Country);
+        Assert.Equal("seller_center", token.AccountPlatform);
+        Assert.Equal("xxx@126.com",   token.Account);
+        Assert.Equal("7063844",       token.AccountId);
+        Assert.Equal("0ba2887315178178017221014", token.RequestId);
+        Assert.Equal("0",             token.Code);
+
+        Assert.NotNull(token.CountryUserInfo);
+        var sg = Assert.Single(token.CountryUserInfo!);
+        Assert.Equal("SG",     sg.Country);
+        Assert.Equal("1001",   sg.UserId);
+        Assert.Equal("1001",   sg.SellerId);
+        Assert.Equal("SG1001", sg.ShortCode);
+    }
+
+    [Fact]
     public async Task AuthEndpoints_DoNotSendAccessToken_AsParam()
     {
         var handler = new TestHandler(SuccessBody);
