@@ -64,4 +64,13 @@ public interface IOrdersService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Get line items for up to 50 orders in one call. Calls <c>/orders/items/get</c>.
+    /// </summary>
+    Task<GetMultipleOrderItemsResponse> GetMultipleOrderItemsAsync(
+        GetMultipleOrderItemsRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }

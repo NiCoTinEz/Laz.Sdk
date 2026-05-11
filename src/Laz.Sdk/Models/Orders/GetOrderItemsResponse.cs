@@ -125,9 +125,20 @@ public sealed record LazOrderItem
     [JsonConverter(typeof(StringOrBoolJsonConverter))]
     public bool CanEscalatePickup { get; init; }
 
+    // Lazada wires this with two spellings: '/order/items/get' uses 'show_giftwrapping_tag'
+    // (no underscore), '/orders/items/get' uses 'show_gift_wrapping_tag' (with underscore).
+    // Capture both; ShowGiftWrappingTag is the convenience accessor.
     [JsonPropertyName("show_giftwrapping_tag")]
     [JsonConverter(typeof(StringOrBoolJsonConverter))]
-    public bool ShowGiftWrappingTag { get; init; }
+    public bool ShowGiftWrappingTagCompact { get; init; }
+
+    [JsonPropertyName("show_gift_wrapping_tag")]
+    [JsonConverter(typeof(StringOrBoolJsonConverter))]
+    public bool ShowGiftWrappingTagUnderscored { get; init; }
+
+    /// <summary>Convenience accessor — true if either spelling is true.</summary>
+    [JsonIgnore]
+    public bool ShowGiftWrappingTag => ShowGiftWrappingTagCompact || ShowGiftWrappingTagUnderscored;
 
     [JsonPropertyName("show_personalization_tag")]
     [JsonConverter(typeof(StringOrBoolJsonConverter))]

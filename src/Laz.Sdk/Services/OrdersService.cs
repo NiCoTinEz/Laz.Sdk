@@ -60,6 +60,30 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
         return response.DeserializeOrThrow<GetOrdersResponse>();
     }
 
+    public async Task<GetMultipleOrderItemsResponse> GetMultipleOrderItemsAsync(
+        GetMultipleOrderItemsRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        if (request.OrderIds is null || request.OrderIds.Count == 0)
+        {
+            throw new ArgumentException("OrderIds must contain at least one id.", nameof(request));
+        }
+        if (request.OrderIds.Count > 50)
+        {
+            throw new ArgumentException("OrderIds cannot exceed 50 per call.", nameof(request));
+        }
+
+        var lazRequest = new LazRequest("/orders/items/get") { HttpMethod = Constants.METHOD_GET };
+        lazRequest.AddApiParameter("order_ids", FormatIds(request.OrderIds));
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<GetMultipleOrderItemsResponse>();
+    }
+
     public async Task<GetOrderItemsResponse> GetOrderItemsAsync(
         GetOrderItemsRequest request,
         string accessToken,
