@@ -1,6 +1,7 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
+using Laz.Sdk.Models;
 using Laz.Sdk.Util;
 
 namespace Laz.Sdk;
@@ -9,11 +10,53 @@ internal sealed class LazClient(HttpClient http, LazClientOptions options) : ILa
 {
     private const string PartnerId = "laz-sdk-net-20260511";
 
-    public async Task<LazResponse> ExecuteAsync(
+    public Task<LazResponse> ExecuteAsync(
         LazRequest request,
         string? accessToken = null,
         DateTime? timestamp = null,
         CancellationToken cancellationToken = default)
+        => ExecuteCoreAsync(request, options.ServerUrl, accessToken, timestamp, cancellationToken);
+
+    public async Task<LazAccessToken> CreateAccessTokenAsync(string code, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(code);
+
+        var request = new LazRequest("/auth/token/create") { HttpMethod = Constants.METHOD_GET };
+        request.AddApiParameter("code", code);
+
+        var response = await ExecuteCoreAsync(
+            request,
+            UrlConstants.API_AUTHORIZATION_URL,
+            accessToken: null,
+            timestamp: null,
+            cancellationToken).ConfigureAwait(false);
+
+        return ParseAuthResponse(response);
+    }
+
+    public async Task<LazAccessToken> RefreshAccessTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+    {
+        ArgumentException.ThrowIfNullOrEmpty(refreshToken);
+
+        var request = new LazRequest("/auth/token/refresh") { HttpMethod = Constants.METHOD_GET };
+        request.AddApiParameter("refresh_token", refreshToken);
+
+        var response = await ExecuteCoreAsync(
+            request,
+            UrlConstants.API_AUTHORIZATION_URL,
+            accessToken: null,
+            timestamp: null,
+            cancellationToken).ConfigureAwait(false);
+
+        return ParseAuthResponse(response);
+    }
+
+    private async Task<LazResponse> ExecuteCoreAsync(
+        LazRequest request,
+        string serverUrl,
+        string? accessToken,
+        DateTime? timestamp,
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(request);
         if (string.IsNullOrEmpty(request.ApiName))
@@ -34,7 +77,7 @@ internal sealed class LazClient(HttpClient http, LazClientOptions options) : ILa
         var sign = LazUtils.SignRequest(request.ApiName, sysParams, options.AppSecret, options.SignMethod);
         sysParams.Add(Constants.SIGN, sign);
 
-        var url = BuildServerUrl(options.ServerUrl, request.ApiName);
+        var url = BuildServerUrl(serverUrl, request.ApiName);
         using var httpRequest = BuildHttpRequest(request, url, sysParams);
         ApplyHeaders(httpRequest, request);
 
@@ -42,6 +85,18 @@ internal sealed class LazClient(HttpClient http, LazClientOptions options) : ILa
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
         return ParseResponse(body);
+    }
+
+    private static LazAccessToken ParseAuthResponse(LazResponse response)
+    {
+        var token = response.ReadAs<LazAccessToken>();
+        if (token is null || string.IsNullOrEmpty(token.AccessToken))
+        {
+            var code    = token?.Code ?? response.Code ?? "unknown";
+            var message = token?.Message ?? response.Message ?? "Lazada auth endpoint returned no access_token.";
+            throw new LazException(code, message);
+        }
+        return token;
     }
 
     private static long ResolveTimestampMs(DateTime? timestamp)

@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Laz.Sdk;
 
 /// <summary>
@@ -22,4 +24,11 @@ public sealed class LazResponse
 
     /// <summary>True when <see cref="Code"/> is present and non-zero.</summary>
     public bool IsError() => !string.IsNullOrEmpty(Code) && !string.Equals(Code, "0", StringComparison.Ordinal);
+
+    /// <summary>
+    /// Deserialize <see cref="Body"/> into <typeparamref name="T"/> via <see cref="JsonSerializer"/>.
+    /// Returns <c>default</c> when the body is empty.
+    /// </summary>
+    public T? ReadAs<T>(JsonSerializerOptions? options = null)
+        => string.IsNullOrEmpty(Body) ? default : JsonSerializer.Deserialize<T>(Body, options);
 }

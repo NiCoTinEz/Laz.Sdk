@@ -49,6 +49,35 @@ else
 }
 ```
 
+## OAuth — getting an access token
+
+Lazada's OAuth flow redirects the seller back to your app with a one-time `code`. Exchange it for tokens:
+
+```csharp
+using Laz.Sdk;
+using Laz.Sdk.Models;
+
+var token = await client.CreateAccessTokenAsync(authorizationCode, cancellationToken: ct);
+
+Console.WriteLine(token.AccessToken);       // "5000..."
+Console.WriteLine(token.RefreshToken);      // "5000..."
+Console.WriteLine(token.ExpiresIn);         // seconds
+Console.WriteLine(token.RefreshExpiresIn);  // seconds
+Console.WriteLine(token.Country);           // e.g. "sg"
+foreach (var info in token.CountryUserInfo ?? Array.Empty<LazCountryUserInfo>())
+{
+    Console.WriteLine($"{info.Country} seller_id={info.SellerId} short_code={info.ShortCode}");
+}
+```
+
+Refresh before `ExpiresIn` elapses:
+
+```csharp
+var refreshed = await client.RefreshAccessTokenAsync(token.RefreshToken!, ct);
+```
+
+Both methods call the Lazada auth gateway (`https://auth.lazada.com/rest`) regardless of the regional `ServerUrl` configured in `LazClientOptions`. On error the SDK throws `LazException` with `ErrorCode` and `ErrorMsg`.
+
 ## Multi-tenant — multiple `AppKey` / `AppSecret`
 
 Register one named client per tenant; resolve via `ILazClientFactory`:
