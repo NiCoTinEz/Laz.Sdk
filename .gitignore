@@ -1,0 +1,49 @@
+# .NET build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+out/
+artifacts/
+
+# Roslyn cache / restore
+*.binlog
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+project.lock.json
+project.fragment.lock.json
+
+# IDEs
+.vs/
+.vscode/
+.idea/
+*.swp
+*~
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# Test / coverage
+TestResults/
+[Cc]overage*/
+*.coverage
+*.coveragexml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local secrets
+secrets.json
+appsettings.*.json
+!appsettings.json
+!appsettings.Development.json
+
+# Claude Code local state
+.claude/
