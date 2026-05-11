@@ -23,4 +23,21 @@ public interface IOrdersService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// List orders matching the given filters. Calls <c>/orders/get</c>.
+    /// At least one of <see cref="GetOrdersRequest.UpdateAfter"/> /
+    /// <see cref="GetOrdersRequest.CreatedAfter"/> is required by Lazada.
+    /// </summary>
+    /// <param name="request">Filter + paging + sort options.</param>
+    /// <param name="accessToken">Seller access token.</param>
+    /// <param name="credentials">Optional per-call credential override.</param>
+    /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>Page of orders with <c>count</c> and <c>countTotal</c>.</returns>
+    /// <exception cref="LazException">Thrown when the platform returns an error response.</exception>
+    Task<GetOrdersResponse> GetOrdersAsync(
+        GetOrdersRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }

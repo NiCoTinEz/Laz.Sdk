@@ -30,6 +30,53 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
         return response.DeserializeOrThrow<GetOrderDocumentResponse>();
     }
 
+    public async Task<GetOrdersResponse> GetOrdersAsync(
+        GetOrdersRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        if (request.UpdateAfter is null && request.CreatedAfter is null)
+        {
+            throw new ArgumentException(
+                "Either UpdateAfter or CreatedAfter is required.",
+                nameof(request));
+        }
+
+        var lazRequest = new LazRequest("/orders/get") { HttpMethod = Constants.METHOD_GET };
+        if (request.UpdateAfter   is { } ua) lazRequest.AddApiParameter("update_after",   FormatIso(ua));
+        if (request.UpdateBefore  is { } ub) lazRequest.AddApiParameter("update_before",  FormatIso(ub));
+        if (request.CreatedAfter  is { } ca) lazRequest.AddApiParameter("created_after",  FormatIso(ca));
+        if (request.CreatedBefore is { } cb) lazRequest.AddApiParameter("created_before", FormatIso(cb));
+        if (!string.IsNullOrEmpty(request.Status)) lazRequest.AddApiParameter("status", request.Status);
+        if (request.Limit  is { } lim) lazRequest.AddApiParameter("limit",  lim.ToString(CultureInfo.InvariantCulture));
+        if (request.Offset is { } off) lazRequest.AddApiParameter("offset", off.ToString(CultureInfo.InvariantCulture));
+        if (request.SortBy        is { } sb) lazRequest.AddApiParameter("sort_by", MapSortBy(sb));
+        if (request.SortDirection is { } sd) lazRequest.AddApiParameter("sort_direction", MapSortDirection(sd));
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<GetOrdersResponse>();
+    }
+
+    private static string FormatIso(DateTimeOffset value)
+        => value.ToString("yyyy-MM-ddTHH:mm:ssK", CultureInfo.InvariantCulture);
+
+    private static string MapSortBy(OrderSortBy sortBy) => sortBy switch
+    {
+        OrderSortBy.CreatedAt => "created_at",
+        OrderSortBy.UpdatedAt => "updated_at",
+        _ => throw new ArgumentOutOfRangeException(nameof(sortBy), sortBy, null),
+    };
+
+    private static string MapSortDirection(OrderSortDirection direction) => direction switch
+    {
+        OrderSortDirection.Asc  => "ASC",
+        OrderSortDirection.Desc => "DESC",
+        _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, null),
+    };
+
     private static string MapDocType(OrderDocumentType docType) => docType switch
     {
         OrderDocumentType.Invoice         => "invoice",
