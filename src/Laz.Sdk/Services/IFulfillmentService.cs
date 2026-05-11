@@ -19,4 +19,15 @@ public interface IFulfillmentService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Print AWB (Air Waybill / shipping label) for one or more packages.
+    /// Calls <c>/order/package/document/get</c>. The response contains a Base64-encoded file
+    /// (and optionally a hosted PDF URL).
+    /// </summary>
+    Task<PrintAwbResponse> PrintAwbAsync(
+        PrintAwbRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }

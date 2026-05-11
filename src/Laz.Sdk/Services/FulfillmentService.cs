@@ -32,6 +32,34 @@ internal sealed class FulfillmentService(LazClient client) : IFulfillmentService
         return response.DeserializeOrThrow<GetShipmentProvidersResponse>();
     }
 
+    public async Task<PrintAwbResponse> PrintAwbAsync(
+        PrintAwbRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        ArgumentException.ThrowIfNullOrEmpty(request.DocType);
+        if (request.Packages is null || request.Packages.Count == 0)
+        {
+            throw new ArgumentException("At least one package is required.", nameof(request));
+        }
+
+        var payload = JsonSerializer.Serialize(new
+        {
+            doc_type        = request.DocType,
+            print_item_list = request.PrintItemList ? "true" : "false",
+            packages        = request.Packages.Select(p => new { package_id = p.PackageId }).ToArray(),
+        });
+
+        var lazRequest = new LazRequest("/order/package/document/get") { HttpMethod = Constants.METHOD_GET };
+        lazRequest.AddApiParameter("getDocumentReq", payload);
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<PrintAwbResponse>();
+    }
+
     private static string SerializeShipmentProvidersReq(GetShipmentProvidersRequest request)
     {
         var ordersJson = request.Orders.Select(o => new
