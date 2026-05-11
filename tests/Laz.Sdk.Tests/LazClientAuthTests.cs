@@ -37,7 +37,7 @@ public class LazClientAuthTests
         var handler = new TestHandler(SuccessBody);
         var client = NewClient(handler);
 
-        await client.CreateAccessTokenAsync("oauth-code-xyz");
+        await client.Auth.CreateAccessTokenAsync("oauth-code-xyz");
 
         Assert.Equal(HttpMethod.Get, handler.LastRequest!.Method);
         var url = handler.LastRequest.RequestUri!.ToString();
@@ -54,7 +54,7 @@ public class LazClientAuthTests
         var handler = new TestHandler(SuccessBody);
         var client = NewClient(handler);
 
-        var token = await client.CreateAccessTokenAsync("c");
+        var token = await client.Auth.CreateAccessTokenAsync("c");
 
         Assert.Equal("acc-123",            token.AccessToken);
         Assert.Equal("ref-456",            token.RefreshToken);
@@ -81,7 +81,7 @@ public class LazClientAuthTests
         var handler = new TestHandler(errorBody);
         var client = NewClient(handler);
 
-        var ex = await Assert.ThrowsAsync<LazException>(() => client.CreateAccessTokenAsync("bad"));
+        var ex = await Assert.ThrowsAsync<LazException>(() => client.Auth.CreateAccessTokenAsync("bad"));
         Assert.Equal("IllegalAccessToken", ex.ErrorCode);
         Assert.Equal("invalid code",       ex.ErrorMsg);
     }
@@ -90,7 +90,7 @@ public class LazClientAuthTests
     public async Task CreateAccessTokenAsync_RejectsEmptyCode()
     {
         var client = NewClient(new TestHandler("""{}"""));
-        await Assert.ThrowsAsync<ArgumentException>(() => client.CreateAccessTokenAsync(""));
+        await Assert.ThrowsAsync<ArgumentException>(() => client.Auth.CreateAccessTokenAsync(""));
     }
 
     [Fact]
@@ -99,7 +99,7 @@ public class LazClientAuthTests
         var handler = new TestHandler(SuccessBody);
         var client = NewClient(handler);
 
-        await client.RefreshAccessTokenAsync("ref-existing");
+        await client.Auth.RefreshAccessTokenAsync("ref-existing");
 
         var url = handler.LastRequest!.RequestUri!.ToString();
         Assert.StartsWith(UrlConstants.API_AUTHORIZATION_URL + "/auth/token/refresh?", url, StringComparison.Ordinal);
@@ -110,7 +110,7 @@ public class LazClientAuthTests
     public async Task RefreshAccessTokenAsync_RejectsEmptyToken()
     {
         var client = NewClient(new TestHandler("""{}"""));
-        await Assert.ThrowsAsync<ArgumentException>(() => client.RefreshAccessTokenAsync(""));
+        await Assert.ThrowsAsync<ArgumentException>(() => client.Auth.RefreshAccessTokenAsync(""));
     }
 
     [Fact]
@@ -143,7 +143,7 @@ public class LazClientAuthTests
 
         var client = NewClient(new TestHandler(OfficialSample));
 
-        var token = await client.CreateAccessTokenAsync("0_100132_2DL4DV3jcU1UOT7WGI1A4rY91");
+        var token = await client.Auth.CreateAccessTokenAsync("0_100132_2DL4DV3jcU1UOT7WGI1A4rY91");
 
         Assert.Equal("50000601c30atpedfgu3LVvik87Ixlsvle3mSoB7701ceb156fPunYZ43GBg", token.AccessToken);
         Assert.Equal("500016000300bwa2WteaQyfwBMnPxurcA0mXGhQdTt18356663CfcDTYpWoi", token.RefreshToken);
@@ -170,7 +170,7 @@ public class LazClientAuthTests
         var handler = new TestHandler(SuccessBody);
         var client = NewClient(handler);
 
-        await client.CreateAccessTokenAsync("code-xyz");
+        await client.Auth.CreateAccessTokenAsync("code-xyz");
 
         var url = handler.LastRequest!.RequestUri!.ToString();
         Assert.DoesNotContain("access_token=", url, StringComparison.Ordinal);

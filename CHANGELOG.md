@@ -9,11 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- `ILazClient.CreateAccessTokenAsync(code, ct)` — typed wrapper around `/auth/token/create` on the Lazada auth gateway. Returns `LazAccessToken` with access + refresh tokens, expiry seconds, country, account info, and `country_user_info` list.
-- `ILazClient.RefreshAccessTokenAsync(refreshToken, ct)` — typed wrapper around `/auth/token/refresh`.
+- `client.Auth.CreateAccessTokenAsync(code, ct)` — typed wrapper around `/auth/token/create` on the Lazada auth gateway. Returns `LazAccessToken` with access + refresh tokens, expiry seconds, country, account info, and `country_user_info` list.
+- `client.Auth.RefreshAccessTokenAsync(refreshToken, ct)` — typed wrapper around `/auth/token/refresh`.
 - `LazAccessToken` + `LazCountryUserInfo` record types under `Laz.Sdk.Models`.
 - `LazResponse.ReadAs<T>(JsonSerializerOptions?)` helper for deserializing the raw body of any `ExecuteAsync` call.
-- Service-grouped surface: `ILazClient.Orders` → `IOrdersService`.
+- Service-grouped surface: every API domain lives under a property on `ILazClient`. Currently exposes `Auth` (`IAuthService`) and `Orders` (`IOrdersService`).
 - `client.Orders.GetDocumentAsync(request, accessToken, ct)` — `/order/document/get`. Returns invoice / shipping label / carrier manifest (Base64 file payload + mime type). Wraps `OrderDocumentType` enum to the wire-format string. Helper `OrderDocument.GetFileBytes()` decodes Base64 to bytes.
 
 ### Fixed

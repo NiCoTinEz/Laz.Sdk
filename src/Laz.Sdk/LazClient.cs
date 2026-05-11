@@ -1,7 +1,6 @@
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
-using Laz.Sdk.Models;
 using Laz.Sdk.Services;
 using Laz.Sdk.Util;
 
@@ -18,9 +17,11 @@ internal sealed class LazClient : ILazClient
     {
         this.http = http;
         this.options = options;
+        Auth = new AuthService(this);
         Orders = new OrdersService(this);
     }
 
+    public IAuthService Auth { get; }
     public IOrdersService Orders { get; }
 
     public Task<LazResponse> ExecuteAsync(
@@ -30,41 +31,10 @@ internal sealed class LazClient : ILazClient
         CancellationToken cancellationToken = default)
         => ExecuteCoreAsync(request, options.ServerUrl, accessToken, timestamp, cancellationToken);
 
-    public async Task<LazAccessToken> CreateAccessTokenAsync(string code, CancellationToken cancellationToken = default)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(code);
-
-        var request = new LazRequest("/auth/token/create") { HttpMethod = Constants.METHOD_GET };
-        request.AddApiParameter("code", code);
-
-        var response = await ExecuteCoreAsync(
-            request,
-            UrlConstants.API_AUTHORIZATION_URL,
-            accessToken: null,
-            timestamp: null,
-            cancellationToken).ConfigureAwait(false);
-
-        return ParseAuthResponse(response);
-    }
-
-    public async Task<LazAccessToken> RefreshAccessTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
-    {
-        ArgumentException.ThrowIfNullOrEmpty(refreshToken);
-
-        var request = new LazRequest("/auth/token/refresh") { HttpMethod = Constants.METHOD_GET };
-        request.AddApiParameter("refresh_token", refreshToken);
-
-        var response = await ExecuteCoreAsync(
-            request,
-            UrlConstants.API_AUTHORIZATION_URL,
-            accessToken: null,
-            timestamp: null,
-            cancellationToken).ConfigureAwait(false);
-
-        return ParseAuthResponse(response);
-    }
-
-    private async Task<LazResponse> ExecuteCoreAsync(
+    /// <summary>
+    /// Internal execute that lets services target a non-default gateway (e.g. auth gateway).
+    /// </summary>
+    internal async Task<LazResponse> ExecuteCoreAsync(
         LazRequest request,
         string serverUrl,
         string? accessToken,
@@ -98,18 +68,6 @@ internal sealed class LazClient : ILazClient
         var body = await response.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
 
         return ParseResponse(body);
-    }
-
-    private static LazAccessToken ParseAuthResponse(LazResponse response)
-    {
-        var token = response.ReadAs<LazAccessToken>();
-        if (token is null || string.IsNullOrEmpty(token.AccessToken))
-        {
-            var code    = token?.Code ?? response.Code ?? "unknown";
-            var message = token?.Message ?? response.Message ?? "Lazada auth endpoint returned no access_token.";
-            throw new LazException(code, message);
-        }
-        return token;
     }
 
     private static long ResolveTimestampMs(DateTime? timestamp)

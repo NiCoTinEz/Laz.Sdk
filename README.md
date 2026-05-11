@@ -57,7 +57,7 @@ Lazada's OAuth flow redirects the seller back to your app with a one-time `code`
 using Laz.Sdk;
 using Laz.Sdk.Models;
 
-var token = await client.CreateAccessTokenAsync(authorizationCode, cancellationToken: ct);
+var token = await client.Auth.CreateAccessTokenAsync(authorizationCode, ct);
 
 Console.WriteLine(token.AccessToken);       // "5000..."
 Console.WriteLine(token.RefreshToken);      // "5000..."
@@ -73,7 +73,7 @@ foreach (var info in token.CountryUserInfo ?? Array.Empty<LazCountryUserInfo>())
 Refresh before `ExpiresIn` elapses:
 
 ```csharp
-var refreshed = await client.RefreshAccessTokenAsync(token.RefreshToken!, ct);
+var refreshed = await client.Auth.RefreshAccessTokenAsync(token.RefreshToken!, ct);
 ```
 
 Both methods call the Lazada auth gateway (`https://auth.lazada.com/rest`) regardless of the regional `ServerUrl` configured in `LazClientOptions`. On error the SDK throws `LazException` with `ErrorCode` and `ErrorMsg`.
