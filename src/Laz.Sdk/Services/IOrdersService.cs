@@ -82,4 +82,13 @@ public interface IOrdersService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Mark order items as ready-to-ship. Calls <c>/order/rts</c>. All ids must belong to the same order.
+    /// </summary>
+    Task<ReadyToShipResponse> ReadyToShipAsync(
+        ReadyToShipRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }

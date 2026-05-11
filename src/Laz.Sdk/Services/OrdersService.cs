@@ -60,6 +60,32 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
         return response.DeserializeOrThrow<GetOrdersResponse>();
     }
 
+    public async Task<ReadyToShipResponse> ReadyToShipAsync(
+        ReadyToShipRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        ArgumentException.ThrowIfNullOrEmpty(request.ShipmentProvider);
+        ArgumentException.ThrowIfNullOrEmpty(request.TrackingNumber);
+        ArgumentException.ThrowIfNullOrEmpty(request.DeliveryType);
+        if (request.OrderItemIds is null || request.OrderItemIds.Count == 0)
+        {
+            throw new ArgumentException("OrderItemIds must contain at least one id.", nameof(request));
+        }
+
+        var lazRequest = new LazRequest("/order/rts");
+        lazRequest.AddApiParameter("delivery_type", request.DeliveryType);
+        lazRequest.AddApiParameter("order_item_ids", FormatIds(request.OrderItemIds));
+        lazRequest.AddApiParameter("shipment_provider", request.ShipmentProvider);
+        lazRequest.AddApiParameter("tracking_number", request.TrackingNumber);
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<ReadyToShipResponse>();
+    }
+
     public async Task<PackOrderResponse> PackAsync(
         PackOrderRequest request,
         string accessToken,
