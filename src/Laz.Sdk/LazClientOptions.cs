@@ -1,20 +1,23 @@
-using System.ComponentModel.DataAnnotations;
 using Laz.Sdk.Util;
 
 namespace Laz.Sdk;
 
 /// <summary>
 /// Configuration for a single <see cref="ILazClient"/> registration.
+/// <para>
+/// <see cref="AppKey"/> and <see cref="AppSecret"/> are optional at registration time so that
+/// multi-tenant apps can register only <see cref="ServerUrl"/> and supply credentials per
+/// request via <see cref="ILazClient.WithCredentials"/>. Calls without either source of
+/// credentials throw <see cref="InvalidOperationException"/> from the client.
+/// </para>
 /// </summary>
 public sealed class LazClientOptions
 {
-    /// <summary>Lazada Open Platform app key.</summary>
-    [Required]
-    public required string AppKey { get; set; }
+    /// <summary>Lazada Open Platform app key. Leave empty to require <see cref="ILazClient.WithCredentials"/> per call.</summary>
+    public string AppKey { get; set; } = "";
 
-    /// <summary>Lazada Open Platform app secret. Used for HMAC-SHA256 request signing.</summary>
-    [Required]
-    public required string AppSecret { get; set; }
+    /// <summary>Lazada Open Platform app secret. Leave empty to require <see cref="ILazClient.WithCredentials"/> per call.</summary>
+    public string AppSecret { get; set; } = "";
 
     /// <summary>Regional gateway URL. Defaults to <see cref="UrlConstants.API_GATEWAY_URL_SG"/>.</summary>
     public string ServerUrl { get; set; } = UrlConstants.API_GATEWAY_URL_SG;

@@ -96,19 +96,20 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddLazClient_RegistersValidation()
+    public void AddLazClient_AllowsBlankCredentials_AtRegistration()
     {
+        // Multi-tenant scenario: register only ServerUrl; supply creds per call via WithCredentials.
         var sp = new ServiceCollection()
-            .AddLazClient(o =>
-            {
-                // intentionally leaving AppKey/AppSecret blank — required validation should fire on resolve
-                o.AppKey    = "";
-                o.AppSecret = "";
-            })
+            .AddLazClient(o => o.ServerUrl = UrlConstants.API_GATEWAY_URL_TH)
             .Services
             .BuildServiceProvider();
 
-        Assert.Throws<OptionsValidationException>(() =>
-            sp.GetRequiredService<IOptions<LazClientOptions>>().Value);
+        var opts = sp.GetRequiredService<IOptions<LazClientOptions>>().Value;
+        Assert.Equal("", opts.AppKey);
+        Assert.Equal("", opts.AppSecret);
+        Assert.Equal(UrlConstants.API_GATEWAY_URL_TH, opts.ServerUrl);
+
+        // Resolving the client must succeed too.
+        Assert.NotNull(sp.GetRequiredService<ILazClient>());
     }
 }

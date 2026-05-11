@@ -106,19 +106,33 @@ File.WriteAllBytes("label.html", bytes);
 
 ## Per-call credential override — `client.WithCredentials(...)`
 
-For multi-tenant apps that load credentials from a database at request time (rather than DI startup), call `WithCredentials` to get a scoped `ILazClient`:
+For multi-tenant apps that don't know `AppKey` / `AppSecret` at DI startup, register only the regional `ServerUrl` and supply creds per request:
 
 ```csharp
-var tenantCreds = new LazCredentials(
+// Startup — no AppKey / AppSecret yet
+services.AddLazClient(o => o.ServerUrl = UrlConstants.API_GATEWAY_URL_TH);
+```
+
+```csharp
+// Request handler — creds loaded from your tenant DB / settings store
+var scoped = client.WithCredentials(new LazCredentials(tenant.AppKey, tenant.AppSecret));
+await scoped.Orders.GetDocumentAsync(req, tenant.AccessToken, ct);
+```
+
+`AppKey` / `AppSecret` are optional on `LazClientOptions`; if both are left empty AND no `WithCredentials` override is supplied at call time, the client throws `InvalidOperationException` with a clear message.
+
+You can also override the regional gateway per request:
+
+```csharp
+var creds = new LazCredentials(
     AppKey:    tenant.LazadaAppKey,
     AppSecret: tenant.LazadaAppSecret,
-    ServerUrl: UrlConstants.API_GATEWAY_URL_TH);  // optional, falls back to options.ServerUrl
+    ServerUrl: UrlConstants.API_GATEWAY_URL_TH);  // optional, overrides options.ServerUrl
 
-var scoped = client.WithCredentials(tenantCreds);
+var scoped = client.WithCredentials(creds);
 
-await scoped.ExecuteAsync(new LazRequest("/orders/get") { HttpMethod = Constants.METHOD_GET }, tenantAccessToken, ct);
-await scoped.Orders.GetDocumentAsync(req, tenantAccessToken, ct);
-await scoped.Auth.RefreshAccessTokenAsync(tenantRefreshToken, ct);
+await scoped.ExecuteAsync(new LazRequest("/orders/get") { HttpMethod = Constants.METHOD_GET }, tenant.AccessToken, ct);
+await scoped.Auth.RefreshAccessTokenAsync(tenant.RefreshToken, ct);
 ```
 
 The original `client` is unchanged. The scoped client shares the same `HttpClient` (so resilience handlers / connection pool are reused) and overrides only signing credentials + optional gateway. Cheap to call — fine to instantiate per request.

@@ -62,8 +62,17 @@ internal sealed class LazClient : ILazClient
             throw new ArgumentException($"{nameof(LazRequest)}.{nameof(LazRequest.ApiName)} is required.", nameof(request));
         }
 
+        var effectiveAppKey    = EffectiveAppKey;
+        var effectiveAppSecret = EffectiveAppSecret;
+        if (string.IsNullOrEmpty(effectiveAppKey) || string.IsNullOrEmpty(effectiveAppSecret))
+        {
+            throw new InvalidOperationException(
+                "AppKey and AppSecret are required. Set them on LazClientOptions at DI registration, " +
+                "or call ILazClient.WithCredentials(new LazCredentials(appKey, appSecret)) per request.");
+        }
+
         var sysParams = new LazDictionary(request.ApiParams);
-        sysParams.Add(Constants.APP_KEY, EffectiveAppKey);
+        sysParams.Add(Constants.APP_KEY, effectiveAppKey);
         sysParams.Add(Constants.SIGN_METHOD, options.SignMethod);
         sysParams.Add(Constants.TIMESTAMP, ResolveTimestampMs(timestamp));
         sysParams.Add(Constants.PARTNER_ID, PartnerId);
@@ -72,7 +81,7 @@ internal sealed class LazClient : ILazClient
             sysParams.Add(Constants.ACCESS_TOKEN, accessToken);
         }
 
-        var sign = LazUtils.SignRequest(request.ApiName, sysParams, EffectiveAppSecret, options.SignMethod);
+        var sign = LazUtils.SignRequest(request.ApiName, sysParams, effectiveAppSecret, options.SignMethod);
         sysParams.Add(Constants.SIGN, sign);
 
         var url = BuildServerUrl(serverUrl, request.ApiName);

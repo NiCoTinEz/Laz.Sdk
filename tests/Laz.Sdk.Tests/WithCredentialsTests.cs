@@ -111,6 +111,37 @@ public class WithCredentialsTests
     }
 
     [Fact]
+    public async Task ExecuteAsync_WithoutCredentials_ThrowsInvalidOperation()
+    {
+        // No AppKey/AppSecret on options, no WithCredentials => clear error.
+        var handler = new TestHandler("""{"code":"0"}""");
+        var opts = new LazClientOptions { ServerUrl = UrlConstants.API_GATEWAY_URL_SG };
+        var client = new LazClient(new HttpClient(handler), opts);
+
+        var ex = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            client.ExecuteAsync(new LazRequest("/x/y") { HttpMethod = Constants.METHOD_GET }));
+        Assert.Contains("AppKey", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("AppSecret", ex.Message, StringComparison.Ordinal);
+        Assert.Contains("WithCredentials", ex.Message, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ExecuteAsync_WithCredentialsOnly_Works_WhenOptionsBlank()
+    {
+        // Multi-tenant happy path: options have no creds, WithCredentials supplies them.
+        var handler = new TestHandler("""{"code":"0"}""");
+        var opts = new LazClientOptions { ServerUrl = UrlConstants.API_GATEWAY_URL_SG };
+        var client = new LazClient(new HttpClient(handler), opts);
+
+        var scoped = client.WithCredentials(new LazCredentials("tenant-key", "tenant-secret"));
+        await scoped.ExecuteAsync(new LazRequest("/x/y") { HttpMethod = Constants.METHOD_GET });
+
+        var url = handler.LastRequest!.RequestUri!.ToString();
+        Assert.Contains("app_key=tenant-key", url, StringComparison.Ordinal);
+        Assert.Contains("sign=",              url, StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task WithCredentials_DoesNotAffectOriginalClient()
     {
         var (client, handler) = NewClient();
