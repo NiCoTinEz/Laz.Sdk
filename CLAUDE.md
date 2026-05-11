@@ -58,8 +58,8 @@ Every breaking change to a `public` type requires:
 
 ## Before pushing to NuGet
 
-1. Replace `OWNER` in `Directory.Build.props` with the GitHub account that owns the repo.
-2. Set `Authors` to a real author / org name (currently `$(UserName)`, a build-machine placeholder).
-3. Bump `<Version>` in `Laz.Sdk.csproj`.
-4. Add a CHANGELOG entry for the new version.
-5. Tag the commit `vX.Y.Z`.
+1. Bump `<Version>` in `Laz.Sdk.csproj`.
+2. Add a CHANGELOG entry for the new version.
+3. Tag the commit `vX.Y.Z`.
+4. Pack with `-p:ContinuousIntegrationBuild=true` so SourceLink embeds.
+5. `dotnet nuget push artifacts\Laz.Sdk.<ver>.nupkg --api-key <KEY> --source https://api.nuget.org/v3/index.json`.

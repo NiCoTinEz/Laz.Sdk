@@ -26,8 +26,8 @@
     <Copyright>Copyright (c) 2026 NiCoTinEz</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageProjectUrl>https://github.com/OWNER/Laz.Sdk</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/OWNER/Laz.Sdk</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/NiCoTinEz/Laz.Sdk</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/NiCoTinEz/Laz.Sdk</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>lazada;laz;openplatform;sdk;ecommerce</PackageTags>
   </PropertyGroup>
