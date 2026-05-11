@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ILazClient.RefreshAccessTokenAsync(refreshToken, ct)` — typed wrapper around `/auth/token/refresh`.
 - `LazAccessToken` + `LazCountryUserInfo` record types under `Laz.Sdk.Models`.
 - `LazResponse.ReadAs<T>(JsonSerializerOptions?)` helper for deserializing the raw body of any `ExecuteAsync` call.
+- Service-grouped surface: `ILazClient.Orders` → `IOrdersService`.
+- `client.Orders.GetDocumentAsync(request, accessToken, ct)` — `/order/document/get`. Returns invoice / shipping label / carrier manifest (Base64 file payload + mime type). Wraps `OrderDocumentType` enum to the wire-format string. Helper `OrderDocument.GetFileBytes()` decodes Base64 to bytes.
+
+### Fixed
+
+- `LazAccessToken.ExpiresIn` / `RefreshExpiresIn` now deserialize from JSON strings as Lazada actually returns them (`"expires_in":"10"`), not only from JSON numbers.
 
 ### Changed
 

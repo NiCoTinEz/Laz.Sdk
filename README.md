@@ -78,6 +78,32 @@ var refreshed = await client.RefreshAccessTokenAsync(token.RefreshToken!, ct);
 
 Both methods call the Lazada auth gateway (`https://auth.lazada.com/rest`) regardless of the regional `ServerUrl` configured in `LazClientOptions`. On error the SDK throws `LazException` with `ErrorCode` and `ErrorMsg`.
 
+## Orders — typed wrappers
+
+Access via `client.Orders`. Endpoints are added incrementally; current coverage:
+
+### `client.Orders.GetDocumentAsync(...)` — `/order/document/get`
+
+Retrieve invoice / shipping label / carrier manifest for one or more order items:
+
+```csharp
+using Laz.Sdk.Models.Orders;
+
+var doc = await client.Orders.GetDocumentAsync(
+    new GetOrderDocumentRequest
+    {
+        DocType      = OrderDocumentType.ShippingLabel,
+        OrderItemIds = new[] { 279709L, 279710L },
+    },
+    accessToken: sellerAccessToken,
+    cancellationToken: ct);
+
+byte[] bytes = doc.Data!.Document!.GetFileBytes(); // decoded from Base64
+File.WriteAllBytes("label.html", bytes);
+```
+
+`OrderDocumentType` values map to the wire format: `Invoice` → `"invoice"`, `ShippingLabel` → `"shippingLabel"`, `CarrierManifest` → `"carrierManifest"`. Errors surface as `LazException(ErrorCode, ErrorMsg)`.
+
 ## Multi-tenant — multiple `AppKey` / `AppSecret`
 
 Register one named client per tenant; resolve via `ILazClientFactory`:
