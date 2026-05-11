@@ -60,6 +60,30 @@ internal sealed class OrdersService(ILazClient client) : IOrdersService
         return response.DeserializeOrThrow<GetOrdersResponse>();
     }
 
+    public async Task<PackOrderResponse> PackAsync(
+        PackOrderRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+        ArgumentException.ThrowIfNullOrEmpty(accessToken);
+        ArgumentException.ThrowIfNullOrEmpty(request.ShippingProvider);
+        ArgumentException.ThrowIfNullOrEmpty(request.DeliveryType);
+        if (request.OrderItemIds is null || request.OrderItemIds.Count == 0)
+        {
+            throw new ArgumentException("OrderItemIds must contain at least one id.", nameof(request));
+        }
+
+        var lazRequest = new LazRequest("/order/pack"); // default POST
+        lazRequest.AddApiParameter("shipping_provider", request.ShippingProvider);
+        lazRequest.AddApiParameter("delivery_type", request.DeliveryType);
+        lazRequest.AddApiParameter("order_item_ids", FormatIds(request.OrderItemIds));
+
+        var response = await _client.ExecuteAsync(lazRequest, accessToken, credentials: credentials, cancellationToken: cancellationToken).ConfigureAwait(false);
+        return response.DeserializeOrThrow<PackOrderResponse>();
+    }
+
     public async Task<GetMultipleOrderItemsResponse> GetMultipleOrderItemsAsync(
         GetMultipleOrderItemsRequest request,
         string accessToken,

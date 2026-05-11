@@ -73,4 +73,13 @@ public interface IOrdersService
         string accessToken,
         LazCredentials? credentials = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Mark order items as packed. Calls <c>/order/pack</c>. All ids must belong to the same order.
+    /// </summary>
+    Task<PackOrderResponse> PackAsync(
+        PackOrderRequest request,
+        string accessToken,
+        LazCredentials? credentials = null,
+        CancellationToken cancellationToken = default);
 }
