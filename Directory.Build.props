@@ -20,10 +20,10 @@
 
   <!-- Packaging defaults inherited by every packable project in this repo. -->
   <PropertyGroup>
-    <Authors>$(UserName)</Authors>
+    <Authors>NiCoTinEz</Authors>
     <Company>$(Authors)</Company>
     <Product>Laz.Sdk</Product>
-    <Copyright>Copyright (c) 2026 $(Authors)</Copyright>
+    <Copyright>Copyright (c) 2026 NiCoTinEz</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/OWNER/Laz.Sdk</PackageProjectUrl>
