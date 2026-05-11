@@ -12,11 +12,16 @@ internal sealed class LazClient : ILazClient
 
     private readonly HttpClient http;
     private readonly LazClientOptions options;
+    private readonly LazCredentials? scopedCredentials;
 
     public LazClient(HttpClient http, LazClientOptions options)
+        : this(http, options, scopedCredentials: null) { }
+
+    private LazClient(HttpClient http, LazClientOptions options, LazCredentials? scopedCredentials)
     {
         this.http = http;
         this.options = options;
+        this.scopedCredentials = scopedCredentials;
         Auth = new AuthService(this);
         Orders = new OrdersService(this);
     }
@@ -24,12 +29,22 @@ internal sealed class LazClient : ILazClient
     public IAuthService Auth { get; }
     public IOrdersService Orders { get; }
 
+    public ILazClient WithCredentials(LazCredentials credentials)
+    {
+        ArgumentNullException.ThrowIfNull(credentials);
+        return new LazClient(http, options, credentials);
+    }
+
+    private string EffectiveAppKey    => scopedCredentials?.AppKey    ?? options.AppKey;
+    private string EffectiveAppSecret => scopedCredentials?.AppSecret ?? options.AppSecret;
+    private string EffectiveServerUrl => scopedCredentials?.ServerUrl ?? options.ServerUrl;
+
     public Task<LazResponse> ExecuteAsync(
         LazRequest request,
         string? accessToken = null,
         DateTime? timestamp = null,
         CancellationToken cancellationToken = default)
-        => ExecuteCoreAsync(request, options.ServerUrl, accessToken, timestamp, cancellationToken);
+        => ExecuteCoreAsync(request, EffectiveServerUrl, accessToken, timestamp, cancellationToken);
 
     /// <summary>
     /// Internal execute that lets services target a non-default gateway (e.g. auth gateway).
@@ -48,7 +63,7 @@ internal sealed class LazClient : ILazClient
         }
 
         var sysParams = new LazDictionary(request.ApiParams);
-        sysParams.Add(Constants.APP_KEY, options.AppKey);
+        sysParams.Add(Constants.APP_KEY, EffectiveAppKey);
         sysParams.Add(Constants.SIGN_METHOD, options.SignMethod);
         sysParams.Add(Constants.TIMESTAMP, ResolveTimestampMs(timestamp));
         sysParams.Add(Constants.PARTNER_ID, PartnerId);
@@ -57,7 +72,7 @@ internal sealed class LazClient : ILazClient
             sysParams.Add(Constants.ACCESS_TOKEN, accessToken);
         }
 
-        var sign = LazUtils.SignRequest(request.ApiName, sysParams, options.AppSecret, options.SignMethod);
+        var sign = LazUtils.SignRequest(request.ApiName, sysParams, EffectiveAppSecret, options.SignMethod);
         sysParams.Add(Constants.SIGN, sign);
 
         var url = BuildServerUrl(serverUrl, request.ApiName);

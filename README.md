@@ -104,7 +104,26 @@ File.WriteAllBytes("label.html", bytes);
 
 `OrderDocumentType` values map to the wire format: `Invoice` → `"invoice"`, `ShippingLabel` → `"shippingLabel"`, `CarrierManifest` → `"carrierManifest"`. Errors surface as `LazException(ErrorCode, ErrorMsg)`.
 
-## Multi-tenant — multiple `AppKey` / `AppSecret`
+## Per-call credential override — `client.WithCredentials(...)`
+
+For multi-tenant apps that load credentials from a database at request time (rather than DI startup), call `WithCredentials` to get a scoped `ILazClient`:
+
+```csharp
+var tenantCreds = new LazCredentials(
+    AppKey:    tenant.LazadaAppKey,
+    AppSecret: tenant.LazadaAppSecret,
+    ServerUrl: UrlConstants.API_GATEWAY_URL_TH);  // optional, falls back to options.ServerUrl
+
+var scoped = client.WithCredentials(tenantCreds);
+
+await scoped.ExecuteAsync(new LazRequest("/orders/get") { HttpMethod = Constants.METHOD_GET }, tenantAccessToken, ct);
+await scoped.Orders.GetDocumentAsync(req, tenantAccessToken, ct);
+await scoped.Auth.RefreshAccessTokenAsync(tenantRefreshToken, ct);
+```
+
+The original `client` is unchanged. The scoped client shares the same `HttpClient` (so resilience handlers / connection pool are reused) and overrides only signing credentials + optional gateway. Cheap to call — fine to instantiate per request.
+
+## Multi-tenant — multiple `AppKey` / `AppSecret` known at startup
 
 Register one named client per tenant; resolve via `ILazClientFactory`:
 

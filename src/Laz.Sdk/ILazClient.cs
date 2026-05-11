@@ -29,4 +29,18 @@ public interface ILazClient
         string? accessToken = null,
         DateTime? timestamp = null,
         CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// Return a new <see cref="ILazClient"/> bound to the supplied <paramref name="credentials"/>.
+    /// The returned client shares the underlying <see cref="HttpClient"/> and other options but
+    /// signs every request with the override app key / app secret (and optional regional URL).
+    /// Original client is unaffected. Cheap to call; safe to use per request.
+    /// </summary>
+    /// <example>
+    /// <code>
+    /// var tenant = client.WithCredentials(new LazCredentials(tenantKey, tenantSecret));
+    /// var doc    = await tenant.Orders.GetDocumentAsync(req, tenantAccessToken, ct);
+    /// </code>
+    /// </example>
+    ILazClient WithCredentials(LazCredentials credentials);
 }

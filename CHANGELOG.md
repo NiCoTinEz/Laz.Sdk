@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- `client.WithCredentials(LazCredentials)` — returns a scoped `ILazClient` that overrides `AppKey` / `AppSecret` (and optionally `ServerUrl`) per call without touching DI. Shares the underlying `HttpClient`. Designed for SaaS / multi-tenant scenarios where tenant credentials are loaded at request time.
+- `LazCredentials` record.
 - `client.Auth.CreateAccessTokenAsync(code, ct)` — typed wrapper around `/auth/token/create` on the Lazada auth gateway. Returns `LazAccessToken` with access + refresh tokens, expiry seconds, country, account info, and `country_user_info` list.
 - `client.Auth.RefreshAccessTokenAsync(refreshToken, ct)` — typed wrapper around `/auth/token/refresh`.
 - `LazAccessToken` + `LazCountryUserInfo` record types under `Laz.Sdk.Models`.
