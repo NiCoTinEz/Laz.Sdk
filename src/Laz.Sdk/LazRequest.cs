@@ -26,7 +26,7 @@ public sealed class LazRequest
 
     public LazRequest(string apiName) => ApiName = apiName;
 
-    public void AddApiParameter(string key, string value) => ApiParams.Add(key, value);
+    public void AddApiParameter(string key, string? value) => ApiParams.Add(key, value);
 
     public void AddApiParameter(string key, object? value) => ApiParams.Add(key, value);
 
