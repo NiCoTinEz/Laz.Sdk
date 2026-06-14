@@ -33,6 +33,24 @@ public interface ILazClient
     /// <summary>Seller API endpoints (<c>/seller/*</c>, <c>/shop/*</c>, <c>/rc/*</c>, <c>/warehouse/*</c>).</summary>
     ISellerService Seller { get; }
 
+    /// <summary>Promotions API endpoints (<c>/promotion/voucher/*</c>, <c>/promotion/freeshipping/*</c>, <c>/promotion/flexicombo/*</c>).</summary>
+    IPromotionsService Promotions { get; }
+
+    /// <summary>Media Center / Video API endpoints (<c>/media/video/*</c>, <c>/image/*</c>).</summary>
+    IMediaService Media { get; }
+
+    /// <summary>Product Review API endpoints (<c>/review/seller/*</c>).</summary>
+    IReviewsService Reviews { get; }
+
+    /// <summary>Cross Border Product API endpoints (<c>/product/global/*</c>).</summary>
+    ICrossBorderService CrossBorder { get; }
+
+    /// <summary>Store Decoration API endpoints (<c>/store/*</c>).</summary>
+    IStoreService Store { get; }
+
+    /// <summary>System API endpoints (<c>/auth/token/createWithOpenId</c>, <c>/data/mop/format/get</c>).</summary>
+    ISystemService System { get; }
+
     /// <summary>
     /// Execute a signed request against the Lazada Open Platform gateway configured
     /// via <see cref="LazClientOptions.ServerUrl"/>. Prefer the typed wrappers under

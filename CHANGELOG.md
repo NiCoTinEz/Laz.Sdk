@@ -13,6 +13,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `client.WithCredentials(LazCredentials)` — alternative scoped form. Returns a new `ILazClient` bound to the credentials so multiple calls reuse them. Shares the underlying `HttpClient`.
 - `LazCredentials` record.
 
+### Added (Promotions API)
+
+- `client.Promotions` — new `IPromotionsService` / `PromotionsService` group wrapping 26 endpoints:
+  - **Seller Voucher (9):** `CreateVoucherAsync`, `UpdateVoucherAsync`, `GetVoucherAsync`, `GetVoucherListAsync`, `ActivateVoucherAsync`, `DeactivateVoucherAsync`, `GetVoucherProductsAsync`, `AddVoucherSkuAsync`, `RemoveVoucherSkuAsync`.
+  - **Free Shipping (9):** `CreateFreeShippingAsync`, `UpdateFreeShippingAsync`, `GetFreeShippingAsync`, `GetFreeShippingListAsync`, `ActivateFreeShippingAsync`, `DeactivateFreeShippingAsync`, `GetFreeShippingProductsAsync`, `AddFreeShippingSkuAsync`, `RemoveFreeShippingSkuAsync`.
+  - **FlexiCombo (8):** `CreateFlexiComboAsync`, `GetFlexiComboDetailsAsync`, `UpdateFlexiComboAsync`, `GetFlexiComboListAsync`, `ActivateFlexiComboAsync`, `DeactivateFlexiComboAsync`, `AddFlexiComboProductsAsync`, `RemoveFlexiComboProductsAsync`.
+- Models under `Laz.Sdk.Models.Promotions` namespace for all request/response types.
+
+### Added (Media Center / Video API)
+
+- `client.Media` — new `IMediaService` / `MediaService` group wrapping 7 endpoints:
+  - `InitCreateVideoAsync(...)` — `/media/video/block/create` — initialize a video upload session.
+  - `UploadVideoBlockAsync(...)` — `/media/video/block/upload` — upload a video block.
+  - `CompleteCreateVideoAsync(...)` — `/media/video/block/commit` — complete a video upload session.
+  - `GetVideoAsync(...)` — `/media/video/get` — get video details.
+  - `RemoveVideoAsync(...)` — `/media/video/remove` — remove a video.
+  - `GetVideoQuotaAsync(...)` — `/media/video/quota/get` — get seller's video quota.
+  - `UploadImageAsync(...)` — `/image/upload` — upload an image.
+- Models under `Laz.Sdk.Models.Media` namespace for all request/response types.
+
+### Added (Product Review API)
+
+- `client.Reviews` — new `IReviewsService` / `ReviewsService` group wrapping 3 endpoints:
+  - `GetHistoryReviewIdListAsync(...)` — `/review/seller/history/list` — get paginated review ID list for a product.
+  - `GetReviewListByIdListAsync(...)` — `/review/seller/list/v2` — get full review details by review IDs.
+  - `SubmitSellerReplyAsync(...)` — `/review/seller/reply/add` — submit a seller reply to a review.
+- Models under `Laz.Sdk.Models.Reviews` namespace for all request/response types.
+
 ### Added (Finance API)
 
 - `client.Finance` — new `IFinanceService` / `FinanceService` group wrapping 4 endpoints:
@@ -81,6 +109,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `SellerFieldVerifyAsync(...)` — `/seller/field/verify` — verify a seller field.
   - `GetCountryInfoAsync(...)` — `/seller/country/info/get` — get country info.
 - Models under `Laz.Sdk.Models.Seller` namespace for all request/response types.
+
+### Added (Cross Border Product API)
+
+- `client.CrossBorder` — new `ICrossBorderService` / `CrossBorderService` group wrapping 4 endpoints:
+  - `CreateGlobalProductAsync(...)` — `/product/global/create` — create a global product (XML payload).
+  - `GetGlobalProductExtensionAsync(...)` — `/product/global/extension` — get global product extension info.
+  - `UpdateGlobalSkuAsync(...)` — `/product/global/sku/update` — update SKU for a global product.
+  - `GetGlobalSellerStatusAsync(...)` — `/product/global/seller/status` — check if seller is cross-border enabled.
+- Models under `Laz.Sdk.Models.CrossBorder` namespace for all request/response types.
+
+### Added (Store Decoration API)
+
+- `client.Store` — new `IStoreService` / `StoreService` group wrapping 1 endpoint:
+  - `GetStoreCustomPageAsync(...)` — `/store/custom/page/get` — get paginated store custom pages.
+- Models under `Laz.Sdk.Models.Store` namespace for all request/response types.
+
+### Added (System API)
+
+- `client.System` — new `ISystemService` / `SystemService` group wrapping 2 endpoints:
+  - `CreateAccessTokenWithOpenIdAsync(...)` — `/auth/token/createWithOpenId` — create access token with OpenId.
+  - `GetDataMopFormatAsync(...)` — `/data/mop/format/get` — get data format for bulk operations.
+- Models under `Laz.Sdk.Models.System` namespace for all request/response types.
 
 ### Changed
 

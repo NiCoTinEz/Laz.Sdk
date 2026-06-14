@@ -151,6 +151,58 @@ Access via `client.Products`. Endpoints are added incrementally; current coverag
 || `client.Products.ExitExperimentAsync(...)`                   | `/product/experiment/exit`              | Exit a product experiment |
 || `client.Products.GetNextCascadePropAsync(...)`               | `/product/next/cascade/prop/get`        | Get next cascade property |
 
+## Cross Border Product — typed wrappers
+
+Access via `client.CrossBorder`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.CrossBorder.CreateGlobalProductAsync(...)`       | `/product/global/create`          | Create a global product (XML payload) |
+| `client.CrossBorder.GetGlobalProductExtensionAsync(...)` | `/product/global/extension`       | Get global product extension info |
+| `client.CrossBorder.UpdateGlobalSkuAsync(...)`           | `/product/global/sku/update`      | Update SKU for a global product |
+| `client.CrossBorder.GetGlobalSellerStatusAsync(...)`     | `/product/global/seller/status`   | Check if seller is cross-border enabled |
+
+## Store Decoration — typed wrappers
+
+Access via `client.Store`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Store.GetStoreCustomPageAsync(...)` | `/store/custom/page/get` | Get paginated store custom pages |
+
+## Media Center / Video API — typed wrappers
+
+Access via `client.Media`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Media.InitCreateVideoAsync(...)`       | `/media/video/block/create` | Initialize a video upload session |
+| `client.Media.UploadVideoBlockAsync(...)`      | `/media/video/block/upload` | Upload a video block |
+| `client.Media.CompleteCreateVideoAsync(...)`   | `/media/video/block/commit` | Complete a video upload session |
+| `client.Media.GetVideoAsync(...)`              | `/media/video/get`          | Get video details |
+| `client.Media.RemoveVideoAsync(...)`           | `/media/video/remove`       | Remove a video |
+| `client.Media.GetVideoQuotaAsync(...)`         | `/media/video/quota/get`    | Get seller's video quota |
+| `client.Media.UploadImageAsync(...)`           | `/image/upload`             | Upload an image |
+
+## Product Review API — typed wrappers
+
+Access via `client.Reviews`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Reviews.GetHistoryReviewIdListAsync(...)` | `/review/seller/history/list` | Get paginated review ID list for a product |
+| `client.Reviews.GetReviewListByIdListAsync(...)`  | `/review/seller/list/v2`      | Get full review details by review IDs |
+| `client.Reviews.SubmitSellerReplyAsync(...)`      | `/review/seller/reply/add`    | Submit a seller reply to a review |
+
+## System API — typed wrappers
+
+Access via `client.System`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.System.CreateAccessTokenWithOpenIdAsync(...)` | `/auth/token/createWithOpenId` | Create access token with OpenId |
+| `client.System.GetDataMopFormatAsync(...)`            | `/data/mop/format/get`         | Get data format for bulk operations |
+
 ## Seller — typed wrappers
 
 Access via `client.Seller`. Endpoints are added incrementally; current coverage:
@@ -169,7 +221,52 @@ Access via `client.Seller`. Endpoints are added incrementally; current coverage:
 || `client.Seller.GetSubAddressAsync(...)`                 | `/seller/address/sub/get`          | Get sub-address |
 || `client.Seller.PaymentBindingAsync(...)`                | `/seller/payment/binding`          | Bind payment method |
 || `client.Seller.SellerFieldVerifyAsync(...)`             | `/seller/field/verify`             | Verify a seller field |
-|| `client.Seller.GetCountryInfoAsync(...)`                | `/seller/country/info/get`         | Get country info |
+||| `client.Seller.GetCountryInfoAsync(...)`                | `/seller/country/info/get`         | Get country info |
+
+## Promotions — typed wrappers
+
+Access via `client.Promotions`. Endpoints are added incrementally; current coverage:
+
+### Seller Voucher
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Promotions.CreateVoucherAsync(...)`       | `/promotion/voucher/create`              | Create a seller voucher |
+| `client.Promotions.UpdateVoucherAsync(...)`       | `/promotion/voucher/update`              | Update a seller voucher |
+| `client.Promotions.GetVoucherAsync(...)`          | `/promotion/voucher/get`                 | Get a seller voucher |
+| `client.Promotions.GetVoucherListAsync(...)`      | `/promotion/vouchers/get`                | List seller vouchers |
+| `client.Promotions.ActivateVoucherAsync(...)`     | `/promotion/voucher/activate`            | Activate a seller voucher |
+| `client.Promotions.DeactivateVoucherAsync(...)`   | `/promotion/voucher/deactivate`          | Deactivate a seller voucher |
+| `client.Promotions.GetVoucherProductsAsync(...)`  | `/promotion/voucher/products/get`        | Get products for a voucher |
+| `client.Promotions.AddVoucherSkuAsync(...)`       | `/promotion/voucher/product/sku/add`     | Add SKUs to a voucher |
+| `client.Promotions.RemoveVoucherSkuAsync(...)`    | `/promotion/voucher/product/sku/remove`  | Remove SKUs from a voucher |
+
+### Free Shipping
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Promotions.CreateFreeShippingAsync(...)`       | `/promotion/freeshipping/create`              | Create a free shipping promotion |
+| `client.Promotions.UpdateFreeShippingAsync(...)`       | `/promotion/freeshipping/update`              | Update a free shipping promotion |
+| `client.Promotions.GetFreeShippingAsync(...)`          | `/promotion/freeshipping/get`                 | Get a free shipping promotion |
+| `client.Promotions.GetFreeShippingListAsync(...)`      | `/promotion/freeshippings/get`                | List free shipping promotions |
+| `client.Promotions.ActivateFreeShippingAsync(...)`     | `/promotion/freeshipping/activate`            | Activate a free shipping promotion |
+| `client.Promotions.DeactivateFreeShippingAsync(...)`   | `/promotion/freeshipping/deactivate`          | Deactivate a free shipping promotion |
+| `client.Promotions.GetFreeShippingProductsAsync(...)`  | `/promotion/freeshipping/products/get`        | Get products for a free shipping promotion |
+| `client.Promotions.AddFreeShippingSkuAsync(...)`       | `/promotion/freeshipping/product/sku/add`     | Add SKUs to a free shipping promotion |
+| `client.Promotions.RemoveFreeShippingSkuAsync(...)`    | `/promotion/freeshipping/product/sku/remove`  | Remove SKUs from a free shipping promotion |
+
+### FlexiCombo
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Promotions.CreateFlexiComboAsync(...)`           | `/promotion/flexicombo/create`            | Create a FlexiCombo promotion |
+| `client.Promotions.GetFlexiComboDetailsAsync(...)`       | `/promotion/flexicombo/details`           | Get FlexiCombo details |
+| `client.Promotions.UpdateFlexiComboAsync(...)`           | `/promotion/flexicombo/update`            | Update a FlexiCombo promotion |
+| `client.Promotions.GetFlexiComboListAsync(...)`          | `/promotion/flexicombo/list`              | List FlexiCombo promotions |
+| `client.Promotions.ActivateFlexiComboAsync(...)`         | `/promotion/flexicombo/activate`          | Activate a FlexiCombo promotion |
+| `client.Promotions.DeactivateFlexiComboAsync(...)`       | `/promotion/flexicombo/deactivate`        | Deactivate a FlexiCombo promotion |
+| `client.Promotions.AddFlexiComboProductsAsync(...)`      | `/promotion/flexicombo/products/add`      | Add products to a FlexiCombo promotion |
+| `client.Promotions.RemoveFlexiComboProductsAsync(...)`   | `/promotion/flexicombo/products/remove`   | Remove products from a FlexiCombo promotion |
 
 ### `client.Orders.GetDocumentAsync(...)` — `/order/document/get`
 

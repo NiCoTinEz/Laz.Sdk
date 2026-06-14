@@ -30,6 +30,12 @@ internal sealed class LazClient : ILazClient
         Returns = new ReturnsService(this);
         Products = new ProductService(this);
         Seller = new SellerService(this);
+        CrossBorder = new CrossBorderService(this);
+        Store = new StoreService(this);
+        System = new SystemService(this);
+        Media = new MediaService(this);
+        Reviews = new ReviewsService(this);
+        Promotions = new PromotionsService(this);
     }
 
     public IAuthService Auth { get; }
@@ -40,6 +46,12 @@ internal sealed class LazClient : ILazClient
     public IReturnsService Returns { get; }
     public IProductService Products { get; }
     public ISellerService Seller { get; }
+    public ICrossBorderService CrossBorder { get; }
+    public IStoreService Store { get; }
+    public ISystemService System { get; }
+    public IMediaService Media { get; }
+    public IReviewsService Reviews { get; }
+    public IPromotionsService Promotions { get; }
 
     public ILazClient WithCredentials(LazCredentials credentials)
     {
