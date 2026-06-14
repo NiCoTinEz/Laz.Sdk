@@ -91,7 +91,85 @@ Access via `client.Orders`. Endpoints are added incrementally; current coverage:
 | `client.Orders.GetDocumentAsync(...)`           | `/order/document/get` | Invoice / shipping label / carrier manifest (Base64) |
 | `client.Orders.PackAsync(...)`                  | `/order/pack`         | Mark items packed |
 | `client.Orders.ReadyToShipAsync(...)`           | `/order/rts`          | Mark items ready-to-ship + assign tracking |
-| `client.Orders.CancelAsync(...)`                | `/order/cancel`       | Cancel one pending item |
+|| `client.Orders.CancelAsync(...)`                | `/order/cancel`       | Cancel one pending item |
+
+## Finance — typed wrappers
+
+Access via `client.Finance`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `client.Finance.GetPayoutStatusAsync(...)`             | `/finance/payout/status/get`                | Get payout statements filtered by creation date |
+| `client.Finance.QueryAccountTransactionsAsync(...)`    | `/finance/transaction/accountTransactions/query` | Query account transactions with pagination |
+| `client.Finance.QueryLogisticsFeeDetailAsync(...)`     | `/lbs/slb/queryLogisticsFeeDetail`          | Query logistics fee details |
+| `client.Finance.QueryTransactionDetailsAsync(...)`     | `/finance/seller/transaction/detail`        | Query seller transaction details within a date range |
+
+## Returns &amp; Refund — typed wrappers
+
+Access via `client.Returns`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+|| `client.Returns.GetReverseOrderDetailAsync(...)`         | `/order/reverse/return/detail/list`       | Get detailed reverse order info |
+|| `client.Returns.GetReverseOrderHistoryListAsync(...)`    | `/order/reverse/return/history/list`      | Get history for a reverse order line |
+|| `client.Returns.GetReverseOrderReasonListAsync(...)`     | `/order/reverse/reason/list`              | Get available reason list |
+|| `client.Returns.GetReverseOrdersForSellerAsync(...)`     | `/reverse/getreverseordersforseller`      | List reverse orders with filters + paging |
+|| `client.Returns.ReverseOrderCancelValidateAsync(...)`    | `/order/reverse/cancel/validate`          | Validate cancellation eligibility |
+|| `client.Returns.InitReverseOrderCancelAsync(...)`        | `/order/reverse/cancel/create`            | Initiate a cancellation |
+|| `client.Returns.ReverseOrderReturnUpdateAsync(...)`      | `/order/reverse/return/update`            | Accept / refund / reject a return |
+
+## Products — typed wrappers
+
+Access via `client.Products`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+|| `client.Products.CreateProductAsync(...)`                    | `/product/create`                       | Create a new product |
+|| `client.Products.UpdateProductAsync(...)`                    | `/product/update`                       | Update an existing product |
+|| `client.Products.DeactivateProductAsync(...)`                | `/product/deactivate`                   | Deactivate a product |
+|| `client.Products.GetProductsAsync(...)`                      | `/products/get`                         | List products with filters |
+|| `client.Products.GetProductItemAsync(...)`                   | `/product/item/get`                     | Get a single product item |
+|| `client.Products.AdjustSellableQuantityAsync(...)`           | `/product/stock/sellable/adjust`        | Adjust sellable stock (increment/decrement) |
+|| `client.Products.UpdateSellableQuantityAsync(...)`           | `/product/stock/sellable/update`        | Update sellable stock (absolute value) |
+|| `client.Products.UpdatePriceAsync(...)`                      | `/price/sellable/update`                | Update sellable price |
+|| `client.Products.SetImagesAsync(...)`                        | `/images/set`                           | Set product images |
+|| `client.Products.GetCategoryTreeAsync(...)`                  | `/category/tree/get`                    | Get the category tree |
+|| `client.Products.GetCategoryAttributesAsync(...)`            | `/category/attributes/get`              | Get category attributes |
+|| `client.Products.GetCategorySuggestionAsync(...)`            | `/category/suggestion/get`              | Suggest categories for a product name |
+|| `client.Products.GetCategorySuggestionBulkAsync(...)`        | `/category/suggestion/bulk/get`         | Bulk suggest categories |
+|| `client.Products.GetBrandsAsync(...)`                        | `/brands/get`                           | Get brands for a category |
+|| `client.Products.BatchUpdateSizeChartAsync(...)`             | `/size/chart/batch/update`              | Batch update size charts |
+|| `client.Products.GetQcStatusAsync(...)`                      | `/product/qc/status/get`                | Get QC status for a product |
+|| `client.Products.GetQcAlertProductsAsync(...)`               | `/product/qc/alert/products/get`        | Get QC alert products |
+|| `client.Products.GetPreQcRulesAsync(...)`                    | `/product/pre/qc/rules/get`             | Get pre-QC rules |
+|| `client.Products.GetProductResponseAsync(...)`               | `/product/response/get`                 | Get product creation/update response |
+|| `client.Products.GetSellerItemLimitAsync(...)`               | `/product/seller/item/limit/get`        | Get seller item limit |
+|| `client.Products.GetUnfilledAttributeItemAsync(...)`         | `/product/unfilled/attribute/item/get`  | Get unfilled attribute items |
+|| `client.Products.GetProductContentScoreAsync(...)`           | `/product/content/score/get`            | Get product content score |
+|| `client.Products.ProductCheckAsync(...)`                     | `/product/check`                        | Check a product before creation |
+|| `client.Products.QueryProductExperimentConfigAsync(...)`     | `/product/experiment/config/query`      | Query product experiment config |
+|| `client.Products.ExitExperimentAsync(...)`                   | `/product/experiment/exit`              | Exit a product experiment |
+|| `client.Products.GetNextCascadePropAsync(...)`               | `/product/next/cascade/prop/get`        | Get next cascade property |
+
+## Seller — typed wrappers
+
+Access via `client.Seller`. Endpoints are added incrementally; current coverage:
+
+| Method | Endpoint | Description |
+|---|---|---|
+|| `client.Seller.GetSellerAsync(...)`                     | `/seller/get`                     | Get seller information |
+|| `client.Seller.GetSellerMetricsAsync(...)`              | `/seller/metrics/get`              | Get seller metrics |
+|| `client.Seller.GetSellerPerformanceAsync(...)`          | `/seller/performance/get`          | Get seller performance indicators |
+|| `client.Seller.BatchQueryFollowStatusAsync(...)`        | `/shop/follow/status/batch/query`  | Batch query follow status |
+|| `client.Seller.GetPickUpStoreListAsync(...)`            | `/rc/store/list/get`               | Get pickup store list |
+|| `client.Seller.GetWarehouseBySellerIdAsync(...)`        | `/warehouse/seller/get`            | Get warehouse list by seller id |
+|| `client.Seller.QueryWarehouseDetailAsync(...)`          | `/warehouse/detail/query`          | Query warehouse detail |
+|| `client.Seller.SellerPolicyFetchAsync(...)`             | `/seller/policy/fetch`             | Fetch seller policy |
+|| `client.Seller.GetSellerRegisterInfoAsync(...)`         | `/seller/register/info/get`        | Get seller register info |
+|| `client.Seller.GetSubAddressAsync(...)`                 | `/seller/address/sub/get`          | Get sub-address |
+|| `client.Seller.PaymentBindingAsync(...)`                | `/seller/payment/binding`          | Bind payment method |
+|| `client.Seller.SellerFieldVerifyAsync(...)`             | `/seller/field/verify`             | Verify a seller field |
+|| `client.Seller.GetCountryInfoAsync(...)`                | `/seller/country/info/get`         | Get country info |
 
 ### `client.Orders.GetDocumentAsync(...)` — `/order/document/get`
 

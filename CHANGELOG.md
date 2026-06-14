@@ -13,6 +13,75 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `client.WithCredentials(LazCredentials)` — alternative scoped form. Returns a new `ILazClient` bound to the credentials so multiple calls reuse them. Shares the underlying `HttpClient`.
 - `LazCredentials` record.
 
+### Added (Finance API)
+
+- `client.Finance` — new `IFinanceService` / `FinanceService` group wrapping 4 endpoints:
+  - `GetPayoutStatusAsync(...)` — `/finance/payout/status/get` — payout statements filtered by creation date.
+  - `QueryAccountTransactionsAsync(...)` — `/finance/transaction/accountTransactions/query` — paginated account transactions.
+  - `QueryLogisticsFeeDetailAsync(...)` — `/lbs/slb/queryLogisticsFeeDetail` — logistics fee details.
+  - `QueryTransactionDetailsAsync(...)` — `/finance/seller/transaction/detail` — seller transaction details within a date range.
+
+### Added (Returns &amp; Refund API)
+
+- `client.Returns` — new `IReturnsService` / `ReturnsService` group wrapping 7 endpoints:
+  - `GetReverseOrderDetailAsync(...)` — `/order/reverse/return/detail/list` — detailed reverse order info.
+  - `GetReverseOrderHistoryListAsync(...)` — `/order/reverse/return/history/list` — paginated history for a reverse order line.
+  - `GetReverseOrderReasonListAsync(...)` — `/order/reverse/reason/list` — available reason list.
+  - `GetReverseOrdersForSellerAsync(...)` — `/reverse/getreverseordersforseller` — filtered/paged reverse order listing.
+  - `ReverseOrderCancelValidateAsync(...)` — `/order/reverse/cancel/validate` — validate cancellation eligibility.
+  - `InitReverseOrderCancelAsync(...)` — `/order/reverse/cancel/create` — initiate a cancellation.
+  - `ReverseOrderReturnUpdateAsync(...)` — `/order/reverse/return/update` — accept / refund / reject a return.
+- Models under `Laz.Sdk.Models.Returns` namespace for all request/response types.
+
+### Added (Product API)
+
+- `client.Products` — new `IProductService` / `ProductService` group wrapping 26 endpoints:
+  - `CreateProductAsync(...)` — `/product/create` — create a new product.
+  - `UpdateProductAsync(...)` — `/product/update` — update an existing product.
+  - `DeactivateProductAsync(...)` — `/product/deactivate` — deactivate a product.
+  - `GetProductsAsync(...)` — `/products/get` — list products with filters.
+  - `GetProductItemAsync(...)` — `/product/item/get` — get a single product item.
+  - `AdjustSellableQuantityAsync(...)` — `/product/stock/sellable/adjust` — adjust sellable stock.
+  - `UpdateSellableQuantityAsync(...)` — `/product/stock/sellable/update` — update sellable stock.
+  - `UpdatePriceAsync(...)` — `/price/sellable/update` — update sellable price.
+  - `SetImagesAsync(...)` — `/images/set` — set product images.
+  - `GetCategoryTreeAsync(...)` — `/category/tree/get` — get the category tree.
+  - `GetCategoryAttributesAsync(...)` — `/category/attributes/get` — get category attributes.
+  - `GetCategorySuggestionAsync(...)` — `/category/suggestion/get` — suggest categories.
+  - `GetCategorySuggestionBulkAsync(...)` — `/category/suggestion/bulk/get` — bulk suggest categories.
+  - `GetBrandsAsync(...)` — `/brands/get` — get brands for a category.
+  - `BatchUpdateSizeChartAsync(...)` — `/size/chart/batch/update` — batch update size charts.
+  - `GetQcStatusAsync(...)` — `/product/qc/status/get` — get QC status.
+  - `GetQcAlertProductsAsync(...)` — `/product/qc/alert/products/get` — get QC alert products.
+  - `GetPreQcRulesAsync(...)` — `/product/pre/qc/rules/get` — get pre-QC rules.
+  - `GetProductResponseAsync(...)` — `/product/response/get` — get product response.
+  - `GetSellerItemLimitAsync(...)` — `/product/seller/item/limit/get` — get seller item limit.
+  - `GetUnfilledAttributeItemAsync(...)` — `/product/unfilled/attribute/item/get` — get unfilled attribute items.
+  - `GetProductContentScoreAsync(...)` — `/product/content/score/get` — get product content score.
+  - `ProductCheckAsync(...)` — `/product/check` — check a product before creation.
+  - `QueryProductExperimentConfigAsync(...)` — `/product/experiment/config/query` — query experiment config.
+  - `ExitExperimentAsync(...)` — `/product/experiment/exit` — exit a product experiment.
+  - `GetNextCascadePropAsync(...)` — `/product/next/cascade/prop/get` — get next cascade property.
+- Models under `Laz.Sdk.Models.Products` namespace for all request/response types.
+
+### Added (Seller API)
+
+- `client.Seller` — new `ISellerService` / `SellerService` group wrapping 13 endpoints:
+  - `GetSellerAsync(...)` — `/seller/get` — get seller information.
+  - `GetSellerMetricsAsync(...)` — `/seller/metrics/get` — get seller metrics.
+  - `GetSellerPerformanceAsync(...)` — `/seller/performance/get` — get seller performance indicators.
+  - `BatchQueryFollowStatusAsync(...)` — `/shop/follow/status/batch/query` — batch query follow status.
+  - `GetPickUpStoreListAsync(...)` — `/rc/store/list/get` — get pickup store list.
+  - `GetWarehouseBySellerIdAsync(...)` — `/warehouse/seller/get` — get warehouse list by seller id.
+  - `QueryWarehouseDetailAsync(...)` — `/warehouse/detail/query` — query warehouse detail.
+  - `SellerPolicyFetchAsync(...)` — `/seller/policy/fetch` — fetch seller policy.
+  - `GetSellerRegisterInfoAsync(...)` — `/seller/register/info/get` — get seller register info.
+  - `GetSubAddressAsync(...)` — `/seller/address/sub/get` — get sub-address.
+  - `PaymentBindingAsync(...)` — `/seller/payment/binding` — bind payment method.
+  - `SellerFieldVerifyAsync(...)` — `/seller/field/verify` — verify a seller field.
+  - `GetCountryInfoAsync(...)` — `/seller/country/info/get` — get country info.
+- Models under `Laz.Sdk.Models.Seller` namespace for all request/response types.
+
 ### Changed
 
 - `LazClientOptions.AppKey` / `LazClientOptions.AppSecret` are now **optional** (default empty). Multi-tenant apps can register a client with only `ServerUrl` and supply credentials per call via `WithCredentials`. If both DI options and per-call credentials are missing, `ILazClient.ExecuteAsync` (and every typed wrapper) throws `InvalidOperationException` at call time with a clear message instead of failing at startup.

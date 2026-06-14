@@ -25,13 +25,21 @@ internal sealed class LazClient : ILazClient
         Auth = new AuthService(this);
         Orders = new OrdersService(this);
         Fulfillment = new FulfillmentService(this);
+        Finance = new FinanceService(this);
         Logistics = new LogisticsService(this);
+        Returns = new ReturnsService(this);
+        Products = new ProductService(this);
+        Seller = new SellerService(this);
     }
 
     public IAuthService Auth { get; }
     public IOrdersService Orders { get; }
     public IFulfillmentService Fulfillment { get; }
+    public IFinanceService Finance { get; }
     public ILogisticsService Logistics { get; }
+    public IReturnsService Returns { get; }
+    public IProductService Products { get; }
+    public ISellerService Seller { get; }
 
     public ILazClient WithCredentials(LazCredentials credentials)
     {

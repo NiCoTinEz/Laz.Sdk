@@ -18,8 +18,20 @@ public interface ILazClient
     /// <summary>Fulfillment endpoints (Pack v2, RTS v2, PrintAWB, repack, DBS/SOF delivery).</summary>
     IFulfillmentService Fulfillment { get; }
 
+    /// <summary>Finance endpoints (payout status, account transactions, logistics fees, transaction details).</summary>
+    IFinanceService Finance { get; }
+
     /// <summary>Logistics endpoints (tracking, 3PL station / runsheet management, scan, LDP).</summary>
     ILogisticsService Logistics { get; }
+
+    /// <summary>Product endpoints (<c>/product/*</c>, <c>/products/*</c>, <c>/category/*</c>, <c>/brands/*</c>, <c>/price/*</c>, <c>/images/*</c>, <c>/size/*</c>).</summary>
+    IProductService Products { get; }
+
+    /// <summary>Return &amp; Refund API endpoints (<c>/order/reverse/*</c>, <c>/reverse/*</c>).</summary>
+    IReturnsService Returns { get; }
+
+    /// <summary>Seller API endpoints (<c>/seller/*</c>, <c>/shop/*</c>, <c>/rc/*</c>, <c>/warehouse/*</c>).</summary>
+    ISellerService Seller { get; }
 
     /// <summary>
     /// Execute a signed request against the Lazada Open Platform gateway configured
